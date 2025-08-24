@@ -6,7 +6,7 @@ const playerSchema = new mongoose.Schema({
   balance: { type: Number, default: 0 },      // Player’s wallet balance
   score: { type: Number, default: 0 },        // Points earned
   gamesPlayed: { type: Number, default: 0 },  // Total games played
-  jackpotWins: { type: Number, default: 0 }   // Count of jackpot wins
+  jackpotWins: { type: Number, default: 0 }   // Jackpot wins count
 });
 
 module.exports = mongoose.model("Player", playerSchema);
