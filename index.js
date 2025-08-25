@@ -1,11 +1,4 @@
-const { generateBingoCard, BingoGame, checkWin } = require('./game');
-
-const card = generateBingoCard();
-const game = new BingoGame();
-game.drawnNumbers = [card[0][0], card[1][1], card[2][2], card[3][3], card[4][4]];
-
-console.log("Card:", card);
-console.log("Win?", checkWin(card, game.drawnNumbers));
+const { generateBingoCard, BingoGame, checkWin } = require("./game");
 
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -22,14 +15,11 @@ const User = require("./models/User");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // Connect to MongoDB
-mongoose.connect(process.env.DB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("✅ Connected to MongoDB"))
-.catch((err) => console.error("❌ MongoDB connection error:", err));
+mongoose.connect(process.env.DB_URL, {})
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Simple /start command
+// /start command
 bot.start(async (ctx) => {
   try {
     const telegramId = String(ctx.from.id);
@@ -49,7 +39,7 @@ bot.start(async (ctx) => {
   }
 });
 
-// Example admin-only command
+// Admin stats command
 bot.command("stats", async (ctx) => {
   if (String(ctx.from.id) !== String(process.env.ADMIN_ID)) {
     return ctx.reply("⛔ You are not authorized to use this command.");
@@ -69,7 +59,7 @@ bot.launch()
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
-// 👉 Add a small Express server so Render detects a port
+// Express server so Render detects a port
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -80,4 +70,3 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🌍 Express server listening on port ${PORT}`);
 });
-
