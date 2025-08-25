@@ -1,6 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { Telegraf } = require("telegraf");
+const express = require("express");
 
 // Load models
 const Game = require("./models/Game");
@@ -25,7 +26,6 @@ bot.start(async (ctx) => {
     const telegramId = String(ctx.from.id);
     const username = ctx.from.username || "unknown";
 
-    // Ensure player exists in DB
     let player = await Player.findOne({ userId: telegramId });
     if (!player) {
       player = new Player({ userId: telegramId, username });
@@ -59,3 +59,16 @@ bot.launch()
 // Graceful stop
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
+
+// 👉 Add a small Express server so Render detects a port
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("🤖 Bingo bot is alive and running!");
+});
+
+app.listen(PORT, () => {
+  console.log(`🌍 Express server listening on port ${PORT}`);
+});
+
