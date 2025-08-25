@@ -1,3 +1,12 @@
+const { generateBingoCard, BingoGame, checkWin } = require('./game');
+
+const card = generateBingoCard();
+const game = new BingoGame();
+game.drawnNumbers = [card[0][0], card[1][1], card[2][2], card[3][3], card[4][4]];
+
+console.log("Card:", card);
+console.log("Win?", checkWin(card, game.drawnNumbers));
+
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { Telegraf } = require("telegraf");
