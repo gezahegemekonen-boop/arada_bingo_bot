@@ -1,2 +1,3 @@
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git branch -M main
+git push origin main --force
+
