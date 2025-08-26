@@ -2,15 +2,10 @@ import 'dotenv/config';
 import express from 'express';
 import TelegramBot from 'node-telegram-bot-api';
 import mongoose from 'mongoose';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import { initDb } from './src/db.js';
 import { GameManager } from './src/gameManager.js';
 import { setupHandlers } from './src/handlers.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const token = process.env.BOT_TOKEN;
 const adminId = process.env.ADMIN_ID;
@@ -25,23 +20,36 @@ if (!process.env.DB_URL) {
   process.exit(1);
 }
 
+// --- Express app ---
 const app = express();
-app.get('/', (_req, res) => res.send('Bingo Bot is running.'));
-app.use('/static', express.static(path.join(__dirname, 'static')));
 
+// Health check
+app.get('/', (_req, res) => res.send('Bingo Bot is running.'));
+
+// --- Start server ---
 app.listen(PORT, () => console.log(`🌐 Web server on :${PORT}`));
 
 // --- DB ---
 await initDb(process.env.DB_URL);
 
-// --- Telegram Bot (polling) ---
-const bot = new TelegramBot(token, { polling: true });
-console.log('🤖 Telegram bot started (polling)…');
+// --- Telegram Bot (Webhook mode) ---
+const bot = new TelegramBot(token);
 
-// --- Game manager (singleton) ---
+// Tell Telegram to send updates to our Render service
+bot.setWebHook(`https://${process.env.RENDER_EXTERNAL_HOSTNAME}/${token}`);
+
+// Webhook endpoint
+app.post(`/${token}`, express.json(), (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
+console.log('🤖 Telegram bot started (webhook)…');
+
+// --- Game manager ---
 const gm = new GameManager({ bot, adminId });
 
-// --- Handlers connect bot <-> logic ---
+// --- Handlers ---
 setupHandlers({ bot, gm, adminId });
 
 export { bot, gm };
