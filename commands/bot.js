@@ -1,10 +1,15 @@
 const { Telegraf } = require('telegraf');
 const mongoose = require('mongoose');
+
+// Existing command handlers
 const handleBingoCommand = require('./commands/handleBingoCommand');
 const handleRejectCommand = require('./commands/handleRejectCommand');
 const handleApproveCommand = require('./commands/handleApproveCommand');
 const handlePendingCommand = require('./commands/handlePendingCommand');
-const handleResetCommand = require('./commands/handleResetCommand'); // ✅ New
+const handleResetCommand = require('./commands/handleResetCommand');
+
+// ✅ New command handler
+const handleStartRoundCommand = require('./commands/handleStartRoundCommand');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -20,7 +25,8 @@ bot.command('bingo', (ctx) => handleBingoCommand(ctx));
 handleRejectCommand(bot);
 handleApproveCommand(bot);
 handlePendingCommand(bot);
-handleResetCommand(bot); // ✅ Register /reset
+handleResetCommand(bot);
+handleStartRoundCommand(bot); // ✅ Register /startRound
 
 // Start bot
 bot.launch();
