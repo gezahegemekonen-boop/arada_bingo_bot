@@ -1,11 +1,19 @@
-const rooms = {}; // { stake: { players: [], caller: NumberCaller, cards: [] } }
+const NumberCaller = require('./NumberCaller'); // Make sure this path is correct
+const { generateCard } = require('./cardGenerator'); // Your card generation logic
+const rooms = {}; // { stake: { players: [], cards: [], caller: NumberCaller } }
+
+function generate100Cards() {
+  return Array.from({ length: 100 }, () => generateCard());
+}
 
 function addPlayerToRoom(player, stake) {
   if (!rooms[stake]) {
     rooms[stake] = {
       players: [],
       cards: generate100Cards(),
-      caller: new NumberCaller()
+      caller: new NumberCaller(),
+      winners: [],
+      isActive: false
     };
   }
 
@@ -14,13 +22,40 @@ function addPlayerToRoom(player, stake) {
   player.card = card;
   room.players.push(player);
 
-  if (room.players.length >= 2) {
-    room.caller.start(room.players, sendMessage);
+  if (room.players.length >= 2 && !room.isActive) {
+    room.isActive = true;
+    room.caller.start(room.players, sendMessage); // Make sure sendMessage is defined
   }
 }
 
-function generate100Cards() {
-  return Array.from({ length: 100 }, () => generateCard());
+function getRoomByPlayerId(playerId) {
+  for (const stake in rooms) {
+    const room = rooms[stake];
+    if (room.players.find(p => p.telegramId === playerId || p.id === playerId)) {
+      return room;
+    }
+  }
+  return null;
 }
 
-module.exports = { addPlayerToRoom };
+function resetRoomByPlayerId(playerId) {
+  const room = getRoomByPlayerId(playerId);
+  if (!room) return;
+
+  room.players = [];
+  room.cards = generate100Cards();
+  room.winners = [];
+  room.isActive = false;
+
+  if (room.caller?.stop) {
+    room.caller.stop();
+  }
+  room.caller = new NumberCaller();
+}
+
+module.exports = {
+  addPlayerToRoom,
+  getRoomByPlayerId,
+  resetRoomByPlayerId,
+  rooms
+};
