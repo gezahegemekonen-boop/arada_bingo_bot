@@ -1,26 +1,21 @@
-const Transaction = require('../models/Transaction');
-const User = require('../models/User');
-const checkIfAdmin = require('../utils/checkIfAdmin');
+const { Telegraf } = require('telegraf');
+const mongoose = require('mongoose');
+const handleBingoCommand = require('./commands/handleBingoCommand');
+const handleRejectCommand = require('./commands/handleRejectCommand'); // ✅ Import here
 
-module.exports = (bot) => {
-  bot.command('reject', async (ctx) => {
-    const isAdmin = checkIfAdmin(ctx.from.id);
-    if (!isAdmin) return ctx.reply('🚫 You are not authorized.');
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
-    const txId = ctx.message.text.split(' ')[1];
-    if (!txId) return ctx.reply('❗ Please provide a transaction ID.');
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => console.log('✅ MongoDB connected'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
 
-    const tx = await Transaction.findById(txId);
-    if (!tx || tx.status !== 'pending') {
-      return ctx.reply('⚠️ Transaction not found or already processed.');
-    }
+// Register commands
+bot.command('bingo', (ctx) => handleBingoCommand(ctx));
+handleRejectCommand(bot); // ✅ Register /reject command
 
-    tx.status = 'rejected';
-    await tx.save();
-
-    const user = await User.findById(tx.userId);
-    await ctx.telegram.sendMessage(user.telegramId, `❌ Your transaction (${tx.type} ${tx.amount}) was rejected by admin.`);
-
-    ctx.reply(`✅ Transaction ${txId} rejected.`);
-  });
-};
+// Start bot
+bot.launch();
+console.log('🤖 Bot is running...');
