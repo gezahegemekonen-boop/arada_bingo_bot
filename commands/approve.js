@@ -1,33 +1,26 @@
-bot.onText(/\/approve (\w+)/, async (msg, match) => {
-  const txId = match[1];
-  const adminId = msg.from.id.toString();
+const { getRoomByPlayerId } = require('../utils/roomManager');
 
-  if (adminId !== process.env.ADMIN_ID) {
-    return bot.sendMessage(msg.chat.id, '❌ Unauthorized.');
-  }
+module.exports = (bot) => {
+  bot.command('approve', async (ctx) => {
+    const adminId = ctx.from.id.toString();
+    const isAdmin = require('../utils/checkIfAdmin')(adminId);
+    if (!isAdmin) return ctx.reply('🚫 You are not authorized.');
 
-  const tx = await Transaction.findById(txId);
-  if (!tx || tx.approved) {
-    return bot.sendMessage(msg.chat.id, '⚠️ Invalid or already approved.');
-  }
+    const args = ctx.message.text.split(' ');
+    const targetId = args[1];
+    if (!targetId) return ctx.reply('ℹ️ Usage: /approve <playerId>');
 
-  const player = await Player.findOne({ telegramId: tx.playerId });
-  if (!player) return;
+    const room = getRoomByPlayerId(targetId);
+    if (!room) return ctx.reply('❌ Player not found in any room.');
 
-  if (tx.type === 'deposit') {
-    player.balance += tx.amount;
-  } else if (tx.type === 'withdraw') {
-    player.balance -= tx.amount;
-  }
+    const player = room.players.find(p => p.telegramId === targetId);
+    if (!player || !player.hasWon) {
+      return ctx.reply('⚠️ Player has not claimed Bingo.');
+    }
 
-  tx.approved = true;
-  await tx.save();
-  await player.save();
+    player.isApproved = true;
 
-  const reply = player.language === 'am'
-    ? `✅ እባክዎ ጥያቄው ተፈቅዷል። ቀሪ አዘምኗል።`
-    : `✅ Your request has been approved. Balance updated.`;
-
-  bot.sendMessage(player.telegramId, reply);
-  bot.sendMessage(adminId, `👍 Approved transaction ${txId}.`);
-});
+    await ctx.telegram.sendMessage(targetId, '✅ Your Bingo win has been approved!');
+    ctx.reply(`🎉 Approved Bingo for ${player.username}`);
+  });
+};
