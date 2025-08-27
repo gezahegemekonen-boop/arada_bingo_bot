@@ -33,7 +33,22 @@ const playerSchema = new mongoose.Schema({
   isApproved: {
     type: Boolean,
     default: true, // For deposit approval flow
+  },
+
+  // 📊 Stats Tracking
+  totalGamesPlayed: {
+    type: Number,
+    default: 0,
+  },
+  totalWins: {
+    type: Number,
+    default: 0,
+  },
+  totalPayouts: {
+    type: Number,
+    default: 0,
   }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Player', playerSchema);
