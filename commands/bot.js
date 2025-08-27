@@ -9,7 +9,9 @@ const handlePendingCommand = require('./commands/handlePendingCommand');
 const handleResetCommand = require('./commands/handleResetCommand');
 const handleStartRoundCommand = require('./commands/handleStartRoundCommand');
 const handleJoinCommand = require('./commands/handleJoinCommand');
-const handleLeaveCommand = require('./commands/handleLeaveCommand'); // ✅ New
+const handleLeaveCommand = require('./commands/handleLeaveCommand');
+const handleRoomsCommand = require('./commands/handleRoomsCommand');
+const handleHelpCommand = require('./commands/handleHelpCommand');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -28,7 +30,9 @@ handlePendingCommand(bot);
 handleResetCommand(bot);
 handleStartRoundCommand(bot);
 handleJoinCommand(bot);
-handleLeaveCommand(bot); // ✅ Register /leave
+handleLeaveCommand(bot);
+handleRoomsCommand(bot);
+handleHelpCommand(bot);
 
 // Start bot
 bot.launch();
