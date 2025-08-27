@@ -1,10 +1,10 @@
-// commands/bingo.js
-
 const { isBingo } = require('../utils/bingoValidator');
+const { getRoomByPlayerId } = require('../utils/roomManager');
+const { triggerPayment } = require('../utils/payment'); // ✅ Import here
 
 module.exports = async function handleBingoCommand(ctx) {
-  const playerId = ctx.from.id;
-  const room = getRoomByPlayerId(playerId); // Replace with your actual room lookup
+  const playerId = ctx.from.id.toString();
+  const room = getRoomByPlayerId(playerId);
   if (!room) return ctx.reply("❌ You are not in a game room.");
 
   const player = room.players[playerId];
@@ -13,7 +13,7 @@ module.exports = async function handleBingoCommand(ctx) {
   }
 
   if (player.hasWon) {
-    return ctx.reply("✅ You've already won this round!");
+    return ctx.reply("✅ You've already won this round.");
   }
 
   const calledNumbers = room.numberCaller.getCalledNumbers();
@@ -22,15 +22,19 @@ module.exports = async function handleBingoCommand(ctx) {
     player.hasWon = true;
     room.winners.push(playerId);
 
-    const winMessage = `🎉 Bingo! You won!\n\n🏆 ቢንጎ! አሸንፈህ!`;
-    ctx.reply(winMessage, { reply_to_message_id: ctx.message.message_id });
+    const winMessage = player.language === 'am'
+      ? '🎉 ቢንጎ! አሸንፈህ! እንኳን ደስ አለዎት!'
+      : '🎉 Bingo! You won! Congratulations!';
+    ctx.reply(winMessage);
 
-    // Optional: Notify admin or trigger payout
-    // notifyAdmin(playerId, room.id);
-    // triggerPayment(playerId);
+    // ✅ Trigger payment here
+    await triggerPayment(playerId, room.prizeAmount);
 
+    // Optional: notify other players, end round, log win
   } else {
-    const missMessage = `😢 No Bingo yet. Try again!\n\n⏳ አሁን ጊዜ አይደለም። እንደገና ሞክር!`;
-    ctx.reply(missMessage, { reply_to_message_id: ctx.message.message_id });
+    const missMessage = player.language === 'am'
+      ? '⏳ አሁን ጊዜ አይደለም። ቢንጎ አልተሳካም።'
+      : '⏳ Not yet. That’s not a valid Bingo.';
+    ctx.reply(missMessage);
   }
 };
