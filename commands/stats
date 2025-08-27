@@ -1,0 +1,14 @@
+const payoutAmount = 50; // or whatever your prize is
+
+// Update stats
+try {
+  const dbPlayer = await Player.findOne({ telegramId: targetId });
+  if (dbPlayer) {
+    dbPlayer.totalGamesPlayed += 1;
+    dbPlayer.totalWins += 1;
+    dbPlayer.totalPayouts += payoutAmount;
+    await dbPlayer.save();
+  }
+} catch (err) {
+  console.error('Failed to update stats:', err);
+}
