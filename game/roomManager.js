@@ -1,6 +1,7 @@
 const NumberCaller = require('./NumberCaller'); // Make sure this path is correct
 const { generateCard } = require('./cardGenerator'); // Your card generation logic
-const rooms = {}; // { stake: { players: [], cards: [], caller: NumberCaller } }
+
+const rooms = {}; // { stake: { players: [], cards: [], caller: NumberCaller, winners: [], isActive: false } }
 
 function generate100Cards() {
   return Array.from({ length: 100 }, () => generateCard());
@@ -53,9 +54,22 @@ function resetRoomByPlayerId(playerId) {
   room.caller = new NumberCaller();
 }
 
+// ✅ New: Remove player from their room
+function removePlayerFromRoom(playerId) {
+  for (const stake in rooms) {
+    const room = rooms[stake];
+    const index = room.players.findIndex(p => p.telegramId === playerId || p.id === playerId);
+    if (index !== -1) {
+      room.players.splice(index, 1);
+      break;
+    }
+  }
+}
+
 module.exports = {
   addPlayerToRoom,
   getRoomByPlayerId,
   resetRoomByPlayerId,
+  removePlayerFromRoom, // ✅ Exported for /leave
   rooms
 };
