@@ -15,3 +15,5 @@ bot.onText(/\/deposit (\d+)/, async (msg, match) => {
 
   bot.sendMessage(telegramId, reply);
 });
+const instructions = getPaymentInstructions(player.language);
+bot.sendMessage(telegramId, instructions);
