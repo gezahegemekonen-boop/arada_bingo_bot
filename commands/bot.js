@@ -8,8 +8,9 @@ const handleApproveCommand = require('./commands/handleApproveCommand');
 const handlePendingCommand = require('./commands/handlePendingCommand');
 const handleResetCommand = require('./commands/handleResetCommand');
 
-// ✅ New command handler
+// ✅ New command handlers
 const handleStartRoundCommand = require('./commands/handleStartRoundCommand');
+const handleJoinCommand = require('./commands/handleJoinCommand'); // ✅ Added
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -27,6 +28,7 @@ handleApproveCommand(bot);
 handlePendingCommand(bot);
 handleResetCommand(bot);
 handleStartRoundCommand(bot); // ✅ Register /startRound
+handleJoinCommand(bot);       // ✅ Register /join
 
 // Start bot
 bot.launch();
