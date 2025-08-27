@@ -1,40 +1,39 @@
-const { isBingo } = require('../utils/bingoValidator');
 const { getRoomByPlayerId } = require('../utils/roomManager');
-const { triggerPayment } = require('../utils/payment'); // ✅ Import here
+const validateCard = require('../utils/validateCard');
+const notifyAdmin = require('../utils/notifyAdmin');
 
-module.exports = async function handleBingoCommand(ctx) {
+module.exports = async (ctx) => {
   const playerId = ctx.from.id.toString();
   const room = getRoomByPlayerId(playerId);
-  if (!room) return ctx.reply("❌ You are not in a game room.");
 
-  const player = room.players[playerId];
+  if (!room || !room.isActive) {
+    return ctx.reply('❌ No active Bingo round found.');
+  }
+
+  const player = room.players.find(p => p.telegramId === playerId);
   if (!player || !player.card) {
-    return ctx.reply("❌ You don't have a Bingo card yet.");
+    return ctx.reply('🃏 You don’t have a Bingo card.');
   }
 
   if (player.hasWon) {
-    return ctx.reply("✅ You've already won this round.");
+    return ctx.reply('🎉 You already claimed Bingo!');
   }
 
-  const calledNumbers = room.numberCaller.getCalledNumbers();
-
-  if (isBingo(player.card.grid, calledNumbers)) {
-    player.hasWon = true;
-    room.winners.push(playerId);
-
-    const winMessage = player.language === 'am'
-      ? '🎉 ቢንጎ! አሸንፈህ! እንኳን ደስ አለዎት!'
-      : '🎉 Bingo! You won! Congratulations!';
-    ctx.reply(winMessage);
-
-    // ✅ Trigger payment here
-    await triggerPayment(playerId, room.prizeAmount);
-
-    // Optional: notify other players, end round, log win
-  } else {
-    const missMessage = player.language === 'am'
-      ? '⏳ አሁን ጊዜ አይደለም። ቢንጎ አልተሳካም።'
-      : '⏳ Not yet. That’s not a valid Bingo.';
-    ctx.reply(missMessage);
+  const isValid = validateCard(player.card, room.caller.calledNumbers);
+  if (!isValid) {
+    const msg = player.language === 'am'
+      ? '❌ የተሳሳተ ቢንጎ ነው። እባክዎን እንደገና ያረጋግጡ።'
+      : '❌ Invalid Bingo. Please double-check your card.';
+    return ctx.reply(msg);
   }
+
+  player.hasWon = true;
+  room.winners.push(player);
+
+  const confirmMsg = player.language === 'am'
+    ? '🎉 ቢንጎ አሸናፊ ነዎት! እባክዎን እንዲፈቀድ አስተዳዳሪን ያግኙ።'
+    : '🎉 Bingo! You’re a winner. Awaiting admin approval.';
+  ctx.reply(confirmMsg);
+
+  notifyAdmin(player, room, ctx.telegram); // Notify admin for approval
 };
