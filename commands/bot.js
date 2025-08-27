@@ -1,7 +1,8 @@
 const { Telegraf } = require('telegraf');
 const mongoose = require('mongoose');
 const handleBingoCommand = require('./commands/handleBingoCommand');
-const handleRejectCommand = require('./commands/handleRejectCommand'); // ✅ Import here
+const handleRejectCommand = require('./commands/handleRejectCommand');
+const handleApproveCommand = require('./commands/handleApproveCommand'); // ✅ New
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -14,7 +15,8 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Register commands
 bot.command('bingo', (ctx) => handleBingoCommand(ctx));
-handleRejectCommand(bot); // ✅ Register /reject command
+handleRejectCommand(bot);
+handleApproveCommand(bot); // ✅ Register /approve
 
 // Start bot
 bot.launch();
