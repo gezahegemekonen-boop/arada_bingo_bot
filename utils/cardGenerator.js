@@ -1,4 +1,5 @@
 // utils/cardGenerator.js
+
 function generateBingoCard() {
   const ranges = {
     B: [1, 15],
@@ -8,23 +9,27 @@ function generateBingoCard() {
     O: [61, 75]
   };
 
-  const card = [];
+  const columns = [];
 
   for (const col in ranges) {
     const [min, max] = ranges[col];
     const nums = shuffle(Array.from({ length: max - min + 1 }, (_, i) => i + min)).slice(0, 5);
-    card.push(nums);
+    columns.push(nums);
   }
 
-  // Transpose to get rows
+  // Transpose columns to rows
   const grid = Array.from({ length: 5 }, (_, row) =>
-    Array.from({ length: 5 }, (_, col) => card[col][row])
+    Array.from({ length: 5 }, (_, col) => columns[col][row])
   );
 
   // Set center cell as free space
   grid[2][2] = 'FREE';
 
-  return grid;
+  return {
+    id: generateCardId(),
+    headers: ['B', 'I', 'N', 'G', 'O'],
+    grid
+  };
 }
 
 function shuffle(arr) {
@@ -35,4 +40,10 @@ function shuffle(arr) {
   return arr;
 }
 
-module.exports = generateBingoCard;
+function generateCardId() {
+  return Math.random().toString(36).substring(2, 10);
+}
+
+module.exports = {
+  generateBingoCard
+};
