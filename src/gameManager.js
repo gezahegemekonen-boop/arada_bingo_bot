@@ -8,7 +8,7 @@ export class GameManager {
   constructor({ bot, adminId }) {
     this.bot = bot;
     this.adminId = adminId;
-    this.games = new Map(); // key = stake -> Game
+    this.games = new Map();
     this.callInterval = parseInt(process.env.CALL_INTERVAL_MS || '2500', 10);
     this.activeTimers = new Map();
   }
@@ -209,6 +209,7 @@ export class GameManager {
     });
 
     await tx.save();
+    await this.bot.sendMessage(this.adminId, `📥 New deposit request:\nPlayer: ${userId}\nAmount: ${amount} ETB\nTxID: ${tx._id}`);
     return tx;
   }
 
@@ -238,6 +239,4 @@ export class GameManager {
       const { cardId, numbers, pot, gameId } = await this.buyCard(telegramId, stake);
       const cardText = numbers.join(', ');
 
-      await this.bot.sendMessage(chatId, `🧩 Your Bingo card:\n${cardText}\nCard ID: ${cardId}\nStake: ${stake} ETB\nGame ID: ${gameId}`);
-
-      const game = await this
+      await this.bot.sendMessage(chatId, `🧩 Your Bingo
