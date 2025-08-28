@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 
 import { initDb } from './src/db.js';
 import { GameManager } from './src/gameManager.js';
-import { setupHandlers } from './src/handlers.js';
+import { setupHandlers } from './src/setupHandlers.js'; // ✅ Updated path
 
 const token = process.env.BOT_TOKEN;
 const adminId = process.env.ADMIN_ID;
@@ -50,6 +50,6 @@ console.log('🤖 Telegram bot started (webhook)…');
 const gm = new GameManager({ bot, adminId });
 
 // --- Handlers ---
-setupHandlers({ bot, gm, adminId });
+setupHandlers({ bot, gm, adminId }); // ✅ Modular command setup
 
 export { bot, gm };
