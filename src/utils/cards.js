@@ -33,12 +33,11 @@ export function generateCard() {
   // center free
   card[2][2] = 0;
 
-  return { cardId: shortid.generate(), numbers: card };
+  return { cardId: nanoid(), numbers: card };
 }
 
 // check bingo patterns: rows, cols, diagonals, 4 corners
 export function checkBingo(cardNumbers, calledSet) {
-  // cardNumbers: 5x5 array, with center possibly 0
   const isCalled = (n) => n === 0 || calledSet.has(n);
 
   // rows
