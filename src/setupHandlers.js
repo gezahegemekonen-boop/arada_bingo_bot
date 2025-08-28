@@ -18,3 +18,15 @@ bot.onText(/\/play/, async (msg) => {
     await bot.sendMessage(chatId, '🚫 An error occurred while starting the game. Please contact support or try again later.');
   }
 });
+
+import { setupPlayHandler } from './handlers/playHandler.js';
+// Future handlers can be imported here:
+// import { setupDepositHandler } from './handlers/depositHandler.js';
+// import { setupLanguageHandler } from './handlers/languageHandler.js';
+
+export function setupHandlers({ bot, gm, adminId }) {
+  setupPlayHandler(bot, gm);
+  // Add other handlers here:
+  // setupDepositHandler(bot, gm);
+  // setupLanguageHandler(bot, gm);
+}
