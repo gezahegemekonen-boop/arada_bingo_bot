@@ -239,5 +239,11 @@ export class GameManager {
       const { cardId, numbers, pot, gameId } = await this.buyCard(telegramId, stake);
       const cardText = numbers.join(', ');
 
-      await this.bot.sendMessage(chatId, `🧩 Your Bingo card:\n${cardText}\nCard ID: ${cardId}\nStake: ${stake} ETB\nGame ID: ${gameId}`);
+            await this.bot.sendMessage(chatId, `🎮 Game started! Numbers will be called every ${this.callInterval / 1000} seconds.`);
+    } catch (err) {
+      await this.bot.sendMessage(chatId, `❌ Error: ${err.message}`);
+    }
+  }
+}
+
 
