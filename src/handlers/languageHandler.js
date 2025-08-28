@@ -1,19 +1,31 @@
-bot.onText(/\/language/, async (msg) => {
-  const chatId = msg.chat.id;
+export function setupLanguageHandler(bot, gm) {
+  bot.onText(/\/language/, async (msg) => {
+    const chatId = msg.chat.id;
 
-  await bot.sendMessage(chatId, '🌐 Choose your language:\n1️⃣ English\n2️⃣ አማርኛ');
+    const options = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: '🇪🇹 አማርኛ', callback_data: 'lang_amharic' },
+            { text: '🇬🇧 English', callback_data: 'lang_english' }
+          ]
+        ]
+      }
+    };
 
-  bot.once('message', async (response) => {
-    const choice = response.text.trim();
-
-    if (choice === '1') {
-      await gm.setLanguage(chatId, 'en'); // Save to DB or session
-      await bot.sendMessage(chatId, '✅ Language set to English.');
-    } else if (choice === '2') {
-      await gm.setLanguage(chatId, 'am');
-      await bot.sendMessage(chatId, '✅ ቋንቋ ወደ አማርኛ ተቀይሯል።');
-    } else {
-      await bot.sendMessage(chatId, '❌ Invalid choice. Please type 1 or 2.');
-    }
+    await bot.sendMessage(chatId, 'Please choose your language:', options);
   });
-});
+
+  bot.on('callback_query', async (query) => {
+    const chatId = query.message.chat.id;
+    const choice = query.data;
+
+    if (choice === 'lang_amharic') {
+      await bot.sendMessage(chatId, 'ቋንቋዎ አማርኛ ተመርጧል።');
+    } else if (choice === 'lang_english') {
+      await bot.sendMessage(chatId, 'You selected English.');
+    }
+
+    await bot.answerCallbackQuery(query.id);
+  });
+}
