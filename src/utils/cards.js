@@ -1,4 +1,4 @@
-import shortid from 'shortid';
+import { nanoid } from 'nanoid';
 
 /**
  * Generates a standard 5x5 Bingo card (numbers 1..75) with B I N G O columns ranges:
