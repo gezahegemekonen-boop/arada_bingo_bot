@@ -199,6 +199,19 @@ export class GameManager {
     return tx;
   }
 
+  async requestDeposit({ userId, amount }) {
+    const tx = new Transaction({
+      type: 'deposit',
+      playerId: userId,
+      amount,
+      status: 'pending',
+      requestedAt: new Date()
+    });
+
+    await tx.save();
+    return tx;
+  }
+
   static async ensurePlayer(telegramMsg) {
     const telegramId = telegramMsg.from.id.toString();
     let p = await Player.findOne({ telegramId });
@@ -214,11 +227,10 @@ export class GameManager {
     return p;
   }
 
-  // ✅ NEW: Handle /play command
   async handlePlayCommand(msg) {
     const telegramId = msg.from.id.toString();
     const chatId = msg.chat.id;
-    const stake = 10; // You can make this dynamic later
+    const stake = 10;
 
     try {
       await GameManager.ensurePlayer(msg);
@@ -228,6 +240,4 @@ export class GameManager {
 
       await this.bot.sendMessage(chatId, `🧩 Your Bingo card:\n${cardText}\nCard ID: ${cardId}\nStake: ${stake} ETB\nGame ID: ${gameId}`);
 
-      const game = await this.startGameIfReady(stake);
-      if (game) {
-        await this.bot.sendMessage(chatId, `🎮 Game started! Numbers will be called every ${this.callInterval / 1000} seconds.`);
+      const game = await this
