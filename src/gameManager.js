@@ -239,4 +239,5 @@ export class GameManager {
       const { cardId, numbers, pot, gameId } = await this.buyCard(telegramId, stake);
       const cardText = numbers.join(', ');
 
-      await this.bot.sendMessage(chatId, `🧩 Your Bingo
+      await this.bot.sendMessage(chatId, `🧩 Your Bingo card:\n${cardText}\nCard ID: ${cardId}\nStake: ${stake} ETB\nGame ID: ${gameId}`);
+
