@@ -229,23 +229,28 @@ export class GameManager {
   }
 
   async handlePlayCommand(msg) {
-    const telegramId = msg.from.id.toString();
-    const chatId = msg.chat.id;
-    const stake = 10;
+  const telegramId = msg.from.id.toString();
+  const chatId = msg.chat.id;
+  const stake = 10;
 
-    try {
-      await GameManager.ensurePlayer(msg);
+  try {
+    await GameManager.ensurePlayer(msg);
 
-      const { cardId, numbers, pot, gameId } = await this.buyCard(telegramId, stake);
-      const cardText = numbers.join(', ');
+    const { cardId, numbers, pot, gameId } = await this.buyCard(telegramId, stake);
+    const cardText = numbers.join(', ');
 
-      await this.bot.sendMessage(chatId, `🧾 Card ID: ${cardId}\nNumbers: ${cardText}\nPot: ${pot} ETB\nGame ID: ${gameId}`);
-      await this.bot.sendMessage(chatId, `🎮 Game started! Numbers will be called every ${this.callInterval / 1000} seconds.`);
+    await this.bot.sendMessage(chatId, 
+      `🧾 *Card ID:* \`${cardId}\`\n*Numbers:* \`${cardText}\`\n*Pot:* ${pot} ETB\n*Game ID:* \`${gameId}\``, 
+      { parse_mode: 'Markdown' }
+    );
 
-      await this.startGameIfReady(stake);
-    } catch (err) {
-      await this.bot.sendMessage(chatId, `❌ Error: ${err.message}`);
-    }
+    await this.bot.sendMessage(chatId, 
+      `🎮 *Game started!*\nNumbers will be called every *${this.callInterval / 1000} seconds*.`, 
+      { parse_mode: 'Markdown' }
+    );
+
+    await this.startGameIfReady(stake);
+  } catch (err) {
+    await this.bot.sendMessage(chatId, `❌ Error: ${err.message}`);
   }
 }
-      
