@@ -1,5 +1,7 @@
 // index.js
 
+import GameSession from './models/GameSession.js';
+import { generateBingoCard } from './game.js';
 import 'dotenv/config';
 import express from 'express';
 import TelegramBot from 'node-telegram-bot-api';
