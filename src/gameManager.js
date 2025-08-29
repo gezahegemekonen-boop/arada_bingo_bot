@@ -251,10 +251,13 @@ export class GameManager {
 
     await this.startGameIfReady(stake);
   } catch (err) {
-    await this.bot.sendMessage(chatId, `❌ Error: ${err.message}`);
-  }
+  await this.bot.sendMessage(chatId, `❌ Error: ${err.message}`);
 }
-  export function playGame(msg, bot, adminId) {
+} // Ends handlePlayCommand method
+
+} // ✅ Ends GameManager class
+
+export function playGame(msg, bot, adminId) {
   const manager = new GameManager({ bot, adminId });
   manager.handlePlayCommand(msg);
 }
