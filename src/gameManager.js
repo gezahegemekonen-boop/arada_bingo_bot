@@ -231,14 +231,4 @@ export class GameManager {
   async handlePlayCommand(msg) {
     const telegramId = msg.from.id.toString();
     const chatId = msg.chat.id;
-    const stake = 10;
-
-    try {
-      await GameManager.ensurePlayer(msg);
-
-      const { cardId, numbers, pot, gameId } = await this.buyCard(telegramId, stake);
-      const cardText = numbers.join(', ');
-
-      await this.bot.sendMessage(chatId, `🎮 Game started! Numbers will be called every ${this.callInterval / 1000} seconds.`);
-    } catch (err) {
-      await this.bot
+    const stake = 10
