@@ -234,12 +234,6 @@ export class GameManager {
     const stake = 10;
 
     try {
-        async handlePlayCommand(msg) {
-    const telegramId = msg.from.id.toString();
-    const chatId = msg.chat.id;
-    const stake = 10;
-
-    try {
       await GameManager.ensurePlayer(msg);
 
       const { cardId, numbers, pot, gameId } = await this.buyCard(telegramId, stake);
@@ -254,3 +248,4 @@ export class GameManager {
     }
   }
 }
+      
