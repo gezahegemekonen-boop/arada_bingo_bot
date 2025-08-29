@@ -5,7 +5,8 @@ import express from 'express';
 import TelegramBot from 'node-telegram-bot-api';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import morgan from 'morgan'; // ✅ Logging middleware
+import morgan from 'morgan';
+import validator from 'validator';
 
 import { initDb } from './src/db.js';
 import { GameManager, playGame } from './src/gameManager.js';
@@ -15,7 +16,7 @@ const token = process.env.BOT_TOKEN;
 const adminId = process.env.ADMIN_ID;
 const PORT = process.env.PORT || 10000;
 const DB_URL = process.env.DB_URL;
-const FRONTEND_URL = 'https://arada-bingo.web.app'; // ✅ Replace with your actual frontend
+const FRONTEND_URL = 'https://arada-bingo.web.app';
 
 // --- Validate env ---
 if (!token) {
@@ -44,15 +45,20 @@ app.get('/', (_req, res) => res.send('🎯 Bingo Bot backend is running.'));
 
 // ✅ API endpoint for frontend Web App
 app.post('/api/play', async (req, res) => {
-  const { userId } = req.body;
+  const rawUserId = req.body.userId;
 
-  if (!userId) {
-    return res.status(400).json({ error: 'Missing userId' });
+  // 🧼 Sanitize
+  const userId = validator.trim(rawUserId?.toString() || '');
+
+  // ✅ Validate
+  if (!validator.isNumeric(userId) || userId.length < 5) {
+    console.log(`❌ Invalid userId: ${userId}`);
+    return res.status(400).json({ error: 'Invalid userId' });
   }
 
   try {
-    const result = await playGame(userId); // reuse your game logic
-    console.log(`🎲 User ${userId} played. Result:`, result); // ✅ Custom log
+    const result = await playGame(userId);
+    console.log(`🎲 User ${userId} played. Result:`, result);
     res.json(result);
   } catch (error) {
     console.error(`❌ Error in /api/play for ${userId}:`, error.message);
