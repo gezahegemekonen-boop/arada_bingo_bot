@@ -1,4 +1,4 @@
-// setupHandlers.js
+// src/setupHandlers.js
 import { setupDepositHandler } from './handlers/depositHandler.js';
 import { setupLanguageHandler } from './handlers/languageHandler.js';
 import { setupAdminHandler } from './handlers/adminHandler.js';
@@ -24,8 +24,9 @@ export function setupHandlers({ bot, gm, adminId }) {
 /call – Call next Bingo number
 /checkwin – Check if you’ve won
 /demo – Try demo mode
-/approve <userId> – Admin: approve deposit
-/reject <userId> – Admin: reject deposit
+/approve <txId> – Admin: approve deposit
+/reject <txId> – Admin: reject deposit
+/sendcard <userId> – Admin: send Bingo card image
 /help – Show this help message
     `;
     await bot.sendMessage(msg.chat.id, helpText);
@@ -51,10 +52,10 @@ export function setupHandlers({ bot, gm, adminId }) {
     }
   });
 
-  // --- Modular handlers ---
+  // --- Modular command handlers ---
   setupDepositHandler(bot, gm, adminId);       // /deposit, /status
   setupLanguageHandler(bot, gm);               // /language
-  setupAdminHandler(bot, gm, adminId);         // /approve, /reject
+  setupAdminHandler(bot, gm, adminId);         // /approve, /reject, /sendcard
   setupGameFlowHandler(bot, gm);               // /call, /checkwin
   setupDemoHandler(bot, gm);                   // /demo
 }
