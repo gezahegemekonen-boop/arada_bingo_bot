@@ -254,3 +254,7 @@ export class GameManager {
     await this.bot.sendMessage(chatId, `❌ Error: ${err.message}`);
   }
 }
+  export function playGame(msg, bot, adminId) {
+  const manager = new GameManager({ bot, adminId });
+  manager.handlePlayCommand(msg);
+}
