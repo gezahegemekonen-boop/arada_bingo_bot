@@ -1,16 +1,43 @@
+// setupHandlers.js
 import { setupDepositHandler } from './handlers/depositHandler.js';
 import { setupLanguageHandler } from './handlers/languageHandler.js';
+import { setupAdminHandler } from './handlers/adminHandler.js';
+import { setupGameFlowHandler } from './handlers/gameFlowHandler.js';
+import { setupDemoHandler } from './handlers/demoHandler.js';
 
 export function setupHandlers({ bot, gm, adminId }) {
+  // --- /start command ---
+  bot.onText(/\/start/, async (msg) => {
+    const chatId = msg.chat.id;
+    await bot.sendMessage(chatId, '👋 Welcome to Bingo Bot! Type /play to begin or /help to see all commands.');
+  });
+
+  // --- /help command ---
+  bot.onText(/\/help/, async (msg) => {
+    const helpText = `
+📜 Available Commands:
+/start – Welcome message
+/play – Generate your Bingo cartela
+/deposit <amount> – Send deposit request
+/status – Check your deposit/game status
+/language – Switch language (Amharic/English)
+/call – Call next Bingo number
+/checkwin – Check if you’ve won
+/demo – Try demo mode
+/approve <userId> – Admin: approve deposit
+/reject <userId> – Admin: reject deposit
+/help – Show this help message
+    `;
+    await bot.sendMessage(msg.chat.id, helpText);
+  });
+
   // --- /play command ---
   bot.onText(/\/play/, async (msg) => {
     const chatId = msg.chat.id;
 
     try {
       await bot.sendMessage(chatId, '🎲 Generating your cartela...');
-
-      // Generate cartela or start game logic
-      const cartela = await gm.generateCartela(chatId); // or gm.startGame(chatId)
+      const cartela = await gm.generateCartela(chatId);
 
       if (!cartela) {
         await bot.sendMessage(chatId, '⚠️ Failed to generate cartela. Please try again.');
@@ -24,7 +51,10 @@ export function setupHandlers({ bot, gm, adminId }) {
     }
   });
 
-  // --- Future commands ---
-  setupDepositHandler(bot, gm, adminId);
-  setupLanguageHandler(bot, gm);
+  // --- Modular handlers ---
+  setupDepositHandler(bot, gm, adminId);       // /deposit, /status
+  setupLanguageHandler(bot, gm);               // /language
+  setupAdminHandler(bot, gm, adminId);         // /approve, /reject
+  setupGameFlowHandler(bot, gm);               // /call, /checkwin
+  setupDemoHandler(bot, gm);                   // /demo
 }
