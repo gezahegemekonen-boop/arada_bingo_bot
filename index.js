@@ -10,7 +10,6 @@ import validator from 'validator';
 
 import { initDb } from './src/db.js';
 import { GameManager } from './src/gameManager.js';
-import { GameManager } from './src/gameManager.js';
 import { setupHandlers } from './src/setupHandlers.js';
 
 const token = process.env.BOT_TOKEN;
