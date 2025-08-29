@@ -5,6 +5,7 @@ import express from 'express';
 import TelegramBot from 'node-telegram-bot-api';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import morgan from 'morgan'; // ✅ Logging middleware
 
 import { initDb } from './src/db.js';
 import { GameManager, playGame } from './src/gameManager.js';
@@ -32,7 +33,11 @@ const app = express();
 // 🔒 Secure CORS: only allow your frontend
 app.use(cors({ origin: FRONTEND_URL }));
 
+// 🧾 Parse JSON bodies
 app.use(express.json());
+
+// 📋 Log every request
+app.use(morgan('dev'));
 
 // ✅ Health check
 app.get('/', (_req, res) => res.send('🎯 Bingo Bot backend is running.'));
@@ -47,9 +52,10 @@ app.post('/api/play', async (req, res) => {
 
   try {
     const result = await playGame(userId); // reuse your game logic
+    console.log(`🎲 User ${userId} played. Result:`, result); // ✅ Custom log
     res.json(result);
   } catch (error) {
-    console.error('❌ Error in /api/play:', error);
+    console.error(`❌ Error in /api/play for ${userId}:`, error.message);
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
