@@ -23,6 +23,8 @@ require('./commands/player/transaction')(bot);   // View history
 require('./commands/player/language')(bot);      // Switch language
 require('./commands/player/invite')(bot);        // Referral system (invite link)
 require('./commands/player/referrals')(bot);     // 👥 Track referrals + coins earned
+require('./commands/player/leaderboard')(bot);   // 🏆 Top referrers
+require('./commands/player/bonus')(bot);         // 🎁 Daily bonus
 require('./commands/player/demo')(bot);          // Optional demo mode
 
 // 🛠️ Admin Commands
