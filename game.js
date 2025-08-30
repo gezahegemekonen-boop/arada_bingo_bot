@@ -1,3 +1,5 @@
+// game.js
+
 export class BingoGame {
   constructor(stake) {
     this.stake = stake;
@@ -20,14 +22,35 @@ export class BingoGame {
   }
 
   callNext() {
-    if (this.numbers.length === 0) return;
-    const num = this.numbers.splice(Math.floor(Math.random() * this.numbers.length), 1)[0];
+    if (this.numbers.length === 0) return null;
+    const index = Math.floor(Math.random() * this.numbers.length);
+    const num = this.numbers.splice(index, 1)[0];
     this.called.push(num);
     return num;
   }
 
   checkBingo(card) {
-    // TODO: implement win conditions (row, column, diagonal, 4 corners)
+    // TODO: Implement win conditions (row, column, diagonal, 4 corners)
+    return false;
   }
 }
 
+export function generateBingoCard() {
+  const card = [];
+
+  for (let row = 0; row < 5; row++) {
+    const rowValues = [];
+    for (let col = 0; col < 5; col++) {
+      const min = col * 15 + 1;
+      const max = col * 15 + 15;
+      const num = Math.floor(Math.random() * (max - min + 1)) + min;
+      rowValues.push(num);
+    }
+    card.push(rowValues);
+  }
+
+  // Add "FREE" space in the center
+  card[2][2] = 'FREE';
+
+  return card;
+}
