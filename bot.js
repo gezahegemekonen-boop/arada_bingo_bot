@@ -1,20 +1,30 @@
-const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
+const TelegramBot = require('node-telegram-bot-api');
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
-// 🎮 Player Commands
-require('./commands/player/start')(bot);         // Auto-create player + welcome
-require('./commands/player/help')(bot);          // Show bilingual menu
-require('./commands/player/balance')(bot);       // Show wallet + coins
-require('./commands/player/language')(bot);      // Toggle Amharic/English
-require('./commands/player/transaction')(bot);   // Show deposit/withdraw history
+// 🧩 Player Commands
+require('./commands/player/deposit')(bot);
+require('./commands/player/convert')(bot);
+require('./commands/player/play')(bot);
+require('./commands/player/balance')(bot);
+require('./commands/player/withdraw')(bot);
+require('./commands/player/instruction')(bot);  // ✅ Added here
+require('./commands/player/language')(bot);
+require('./commands/player/transaction')(bot);
+require('./commands/player/invite')(bot);
 
-// 💵 Payment Commands
-require('./commands/deposit')(bot);              // Handle deposits
-require('./commands/confirm')(bot);              // Admin confirms deposits
-require('./commands/withdraw')(bot);             // Handle withdrawals
-require('./commands/account')(bot);              // Show account info
+// 🛠️ Admin Commands (if needed)
+require('./commands/admin/approve')(bot);
+require('./commands/admin/reject')(bot);
+require('./commands/admin/pending')(bot);
 
-// Optional: log startup
-console.log('🤖 Bingo bot is running...');
+// 🧪 Optional: Demo Mode
+require('./commands/player/demo')(bot);
+
+// 🧠 Default fallback
+bot.on('message', (msg) => {
+  if (!msg.text.startsWith('/')) {
+    bot.sendMessage(msg.chat.id, '🤖 Please use a command like /instruction or /play to get started.');
+  }
+});
