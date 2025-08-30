@@ -1,19 +1,30 @@
 {
-  "name": "telegram-bingo-bot",
+  "name": "arada-bingo-bot",
   "version": "1.0.0",
+  "description": "Real-money Bingo bot for Telegram with Amharic audio and payment integration",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "npm install --build-from-source"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.18.2",
-    "mongoose": "^7.5.0",
-    "morgan": "^1.10.0",
-    "nanoid": "^5.0.2",
-    "node-telegram-bot-api": "^0.66.0",
-    "validator": "^13.11.0"
-  }
+    "canvas": "^2.11.2",
+    "dotenv": "^16.3.1",
+    "mongodb": "^6.5.0",
+    "node-telegram-bot-api": "^0.61.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "telegram",
+    "bingo",
+    "amharic",
+    "bot",
+    "render",
+    "mongodb"
+  ],
+  "author": "Mekonen",
+  "license": "MIT"
 }
