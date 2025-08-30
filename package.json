@@ -11,6 +11,7 @@
   "dependencies": {
     "canvas": "^2.11.2",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "mongodb": "^6.5.0",
     "node-telegram-bot-api": "^0.61.0"
   },
@@ -23,7 +24,8 @@
     "amharic",
     "bot",
     "render",
-    "mongodb"
+    "mongodb",
+    "express"
   ],
   "author": "Mekonen",
   "license": "MIT"
