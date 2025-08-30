@@ -1,6 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import playRoute from './routes/play.js';
 
 dotenv.config();
@@ -8,14 +11,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 🛠️ Resolve __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // ✅ Middleware
 app.use(express.json());
 
 // ✅ API Routes
 app.use('/api', playRoute);
 
-// ✅ Optional: Serve frontend
-app.use(express.static('../bingo-frontend'));
+// ✅ Serve frontend (Telegram Web App)
+app.use(express.static(path.join(__dirname, '../bingo-frontend')));
 
 // ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
