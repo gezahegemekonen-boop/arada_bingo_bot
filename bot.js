@@ -21,7 +21,8 @@ require('./commands/player/balance')(bot);       // Show wallet + coins
 require('./commands/player/withdraw')(bot);      // Cash out
 require('./commands/player/transaction')(bot);   // View history
 require('./commands/player/language')(bot);      // Switch language
-require('./commands/player/invite')(bot);        // Referral system
+require('./commands/player/invite')(bot);        // Referral system (invite link)
+require('./commands/player/referrals')(bot);     // 👥 Track referrals + coins earned
 require('./commands/player/demo')(bot);          // Optional demo mode
 
 // 🛠️ Admin Commands
