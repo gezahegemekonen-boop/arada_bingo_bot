@@ -1,5 +1,4 @@
-// game.js
-
+// ✅ Bingo Game Class
 export class BingoGame {
   constructor(stake) {
     this.stake = stake;
@@ -30,8 +29,35 @@ export class BingoGame {
   }
 
   checkBingo(card) {
-    // TODO: Implement win conditions (row, column, diagonal, 4 corners)
-    return false;
+    const isMarked = (num) => num === 'FREE' || this.called.includes(num);
+
+    // Check rows
+    for (let row of card) {
+      if (row.every(isMarked)) return 'row';
+    }
+
+    // Check columns
+    for (let col = 0; col < 5; col++) {
+      const column = card.map(row => row[col]);
+      if (column.every(isMarked)) return 'column';
+    }
+
+    // Check diagonals
+    const diag1 = [0, 1, 2, 3, 4].map(i => card[i][i]);
+    const diag2 = [0, 1, 2, 3, 4].map(i => card[i][4 - i]);
+    if (diag1.every(isMarked)) return 'diagonal';
+    if (diag2.every(isMarked)) return 'diagonal';
+
+    // Check 4 corners
+    const corners = [
+      card[0][0],
+      card[0][4],
+      card[4][0],
+      card[4][4]
+    ];
+    if (corners.every(isMarked)) return 'corners';
+
+    return null;
   }
 }
 
@@ -71,12 +97,19 @@ export async function playGame(userId) {
   game.start();
   const firstCall = game.called[0];
 
+  const winType = game.checkBingo(card);
+  const won = Boolean(winType);
+
   return {
     userId,
     stake,
     card,
     firstCall,
     calledNumbers: game.called,
-    message: `Game started for user ${userId}. First number called: ${firstCall}`
+    won,
+    winType,
+    message: won
+      ? `🎉 Bingo! You won with a ${winType}`
+      : `Game started for user ${userId}. First number called: ${firstCall}`
   };
 }
