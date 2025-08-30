@@ -1,12 +1,22 @@
 {
   "name": "bingo-backend",
   "version": "1.0.0",
+  "description": "Backend server for Arada Bingo Bot",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
+  "keywords": ["bingo", "telegram", "backend", "arada", "Ethiopia"],
+  "author": "Mekonen",
+  "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "mongoose": "^7.5.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
-
