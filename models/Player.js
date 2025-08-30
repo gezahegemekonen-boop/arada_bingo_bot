@@ -10,6 +10,10 @@ const playerSchema = new mongoose.Schema({
     type: Number,
     default: 10, // First-time bonus
   },
+  coins: {
+    type: Number,
+    default: 0, // 🎯 In-game coins for Bingo play
+  },
   isAdmin: {
     type: Boolean,
     default: false,
