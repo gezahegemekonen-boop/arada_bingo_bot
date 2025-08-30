@@ -1,7 +1,9 @@
 bot.onText(/\/deposit (\d+)/, async (msg, match) => {
   const amount = parseInt(match[1]);
   const telegramId = msg.from.id.toString();
+  const language = msg.from.language_code || 'en'; // fallback to English
 
+  // Save deposit request to DB
   await Transaction.create({
     type: 'deposit',
     amount,
@@ -9,11 +11,14 @@ bot.onText(/\/deposit (\d+)/, async (msg, match) => {
     approved: false
   });
 
-  const reply = msg.from.language === 'am'
+  // Confirmation message
+  const reply = language.startsWith('am')
     ? `📥 የተቀመጠ ጥያቄ። እባክዎ አስተማማኝ እንዲያደርጉት ይጠብቁ።`
     : `📥 Deposit request submitted. Please wait for admin approval.`;
 
-  bot.sendMessage(telegramId, reply);
+  await bot.sendMessage(telegramId, reply);
+
+  // Payment instructions
+  const instructions = getPaymentInstructions(language);
+  await bot.sendMessage(telegramId, instructions);
 });
-const instructions = getPaymentInstructions(player.language);
-bot.sendMessage(telegramId, instructions);
