@@ -1,48 +1,44 @@
 import { createCanvas } from 'canvas';
 
-export function renderCard(cardData) {
-  const canvasSize = 300;
-  const cellSize = canvasSize / 5;
-  const canvas = createCanvas(canvasSize, canvasSize + 40); // Extra space for headers
+function renderCard(cardData) {
+  const canvas = createCanvas(300, 300);
   const ctx = canvas.getContext('2d');
 
   // Background
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Grid lines
+  // Grid
   ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 2;
   for (let i = 0; i <= 5; i++) {
     ctx.beginPath();
-    ctx.moveTo(i * cellSize, 40);
-    ctx.lineTo(i * cellSize, canvas.height);
+    ctx.moveTo(i * 60, 0);
+    ctx.lineTo(i * 60, 300);
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(0, 40 + i * cellSize);
-    ctx.lineTo(canvas.width, 40 + i * cellSize);
+    ctx.moveTo(0, i * 60);
+    ctx.lineTo(300, i * 60);
     ctx.stroke();
   }
 
-  // Column headers: B I N G O
-  const headers = ['B', 'I', 'N', 'G', 'O'];
-  ctx.fillStyle = '#000000';
-  ctx.font = 'bold 20px Arial';
-  headers.forEach((letter, i) => {
-    ctx.fillText(letter, i * cellSize + cellSize / 2 - 6, 30);
-  });
-
   // Numbers
-  ctx.font = '18px Arial';
-  cardData.forEach((num, i) => {
-    const col = i % 5;
-    const row = Math.floor(i / 5);
-    const x = col * cellSize + cellSize / 2 - 10;
-    const y = 40 + row * cellSize + cellSize / 2 + 6;
+  ctx.font = 'bold 20px Arial';
+  ctx.fillStyle = '#000000';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
 
-    const text = num === 0 ? '★' : num.toString(); // Free space as star
-    ctx.fillText(text, x, y);
-  });
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 5; col++) {
+      const value = cardData[row][col];
+      const x = col * 60 + 30;
+      const y = row * 60 + 30;
+      ctx.fillText(value, x, y);
+    }
+  }
 
   return canvas.toBuffer('image/png');
 }
+
+export default renderCard;
