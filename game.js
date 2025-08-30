@@ -35,6 +35,7 @@ export class BingoGame {
   }
 }
 
+// ✅ Generate a Bingo card
 export function generateBingoCard() {
   const card = [];
 
@@ -53,4 +54,29 @@ export function generateBingoCard() {
   card[2][2] = 'FREE';
 
   return card;
+}
+
+// ✅ Wrap gameplay logic for API
+export async function playGame(userId) {
+  const stake = 10; // You can customize this later
+  const game = new BingoGame(stake);
+
+  const card = generateBingoCard();
+  const joined = game.join(userId, card);
+
+  if (!joined) {
+    throw new Error('Game already started or user already joined');
+  }
+
+  game.start();
+  const firstCall = game.called[0];
+
+  return {
+    userId,
+    stake,
+    card,
+    firstCall,
+    calledNumbers: game.called,
+    message: `Game started for user ${userId}. First number called: ${firstCall}`
+  };
 }
