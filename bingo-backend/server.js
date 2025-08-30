@@ -5,6 +5,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import playRoute from './routes/play.js';
+import depositRoute from './routes/deposit.js';
+import adminRoute from './routes/admin.js';
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ app.use(express.json());
 
 // ✅ API Routes
 app.use('/api', playRoute);
+app.use('/api', depositRoute);
+app.use('/api/admin', adminRoute);
 
 // ✅ Serve frontend (Telegram Web App)
 app.use(express.static(path.join(__dirname, '../bingo-frontend')));
