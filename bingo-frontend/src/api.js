@@ -1,12 +1,12 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-// ✅ Card selection API
-export async function pickCard(cardId, userId, roundId) {
+// 1️⃣ Card selection API
+export async function pickCard(cardId, userId, roundId, lat, lng) {
   try {
     const res = await fetch(`${BASE_URL}/api/pick-card`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cardId, userId, roundId })
+      body: JSON.stringify({ cardId, userId, roundId, lat, lng })
     });
     return await res.json();
   } catch (err) {
@@ -15,7 +15,7 @@ export async function pickCard(cardId, userId, roundId) {
   }
 }
 
-// ✅ Play round API (triggered after countdown)
+// 2️⃣ Play round API
 export async function playRound(userId, roundId) {
   try {
     const res = await fetch(`${BASE_URL}/api/play`, {
@@ -30,7 +30,7 @@ export async function playRound(userId, roundId) {
   }
 }
 
-// ✅ Deposit API
+// 3️⃣ Deposit API
 export async function deposit(userId, amount) {
   try {
     const res = await fetch(`${BASE_URL}/api/deposit`, {
@@ -45,7 +45,7 @@ export async function deposit(userId, amount) {
   }
 }
 
-// ✅ Get balance API
+// 4️⃣ Get balance API
 export async function getBalance(userId) {
   try {
     const res = await fetch(`${BASE_URL}/api/balance?userId=${userId}`);
@@ -56,7 +56,7 @@ export async function getBalance(userId) {
   }
 }
 
-// ✅ Admin approval API
+// 5️⃣ Admin approval API
 export async function adminApprove(transactionId, status) {
   try {
     const res = await fetch(`${BASE_URL}/api/admin/approve`, {
