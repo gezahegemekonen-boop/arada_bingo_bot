@@ -1,6 +1,7 @@
 // src/components/DepositForm.js
 import { useState } from 'react';
 import { deposit, getBalance } from '../api';
+import './DepositForm.css'; // ✅ Add this line to load styles
 
 export default function DepositForm({ userId, onBalanceUpdate }) {
   const [amount, setAmount] = useState('');
@@ -38,4 +39,3 @@ export default function DepositForm({ userId, onBalanceUpdate }) {
     </div>
   );
 }
-
