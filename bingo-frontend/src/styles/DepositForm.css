@@ -1,0 +1,23 @@
+.deposit-box {
+  margin-top: 20px;
+  padding: 12px;
+  background: #f0f8ff;
+  border-radius: 8px;
+  text-align: center;
+}
+.deposit-box input {
+  padding: 8px;
+  margin-right: 10px;
+  width: 120px;
+}
+.deposit-box button {
+  padding: 8px 16px;
+  background: #007b00;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+.deposit-box p {
+  margin-top: 10px;
+  color: #333;
+}
