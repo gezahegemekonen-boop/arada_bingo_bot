@@ -45,6 +45,12 @@ app.use(morgan('dev'));
 // ✅ Health check
 app.get('/', (_req, res) => res.send('🎯 Bingo Bot backend is running.'));
 
+// ✅ Simple GET endpoint for testing
+app.get('/api/play', (_req, res) => {
+  const card = generateBingoCard(); // uses your existing logic
+  res.json({ success: true, card });
+});
+
 // ✅ API endpoint for frontend Web App
 app.post('/api/play', async (req, res) => {
   const rawUserId = req.body.userId;
