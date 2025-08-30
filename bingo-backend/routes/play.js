@@ -6,15 +6,19 @@ const router = express.Router();
 router.post('/play', async (req, res) => {
   const { userId } = req.body;
 
-  if (!userId || typeof userId !== 'string' || userId.length < 5) {
+  // 🧼 Validate input
+  if (!userId || typeof userId !== 'string' || userId.trim().length < 5) {
     return res.status(400).json({ error: 'Invalid or missing userId' });
   }
 
   try {
+    // 🎯 Run game logic
     const result = await playGame(userId);
+
+    // 📤 Return result
     res.json(result);
-  } catch (err) {
-    console.error('❌ Error in playGame:', err.message);
+  } catch (error) {
+    console.error('❌ Error in /play route:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
