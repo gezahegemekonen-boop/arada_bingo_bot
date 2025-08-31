@@ -1,12 +1,13 @@
 // src/components/CountdownTimer.js
 import { useEffect, useState } from 'react';
+import './CountdownTimer.css';
 
 export default function CountdownTimer({ seconds, onComplete }) {
   const [timeLeft, setTimeLeft] = useState(seconds);
 
   useEffect(() => {
     if (timeLeft <= 0) {
-      onComplete(); // notify parent
+      onComplete(); // Notify parent
       return;
     }
 
@@ -23,4 +24,3 @@ export default function CountdownTimer({ seconds, onComplete }) {
     </div>
   );
 }
-
