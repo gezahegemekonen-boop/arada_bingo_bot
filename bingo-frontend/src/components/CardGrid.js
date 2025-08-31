@@ -2,14 +2,23 @@ import { useState } from 'react';
 import { pickCard } from '../api';
 import './CardGrid.css';
 
-export default function CardGrid({ userId, roundId, onCardPicked, selectedCard }) {
+export default function CardGrid({
+  userId,
+  roundId,
+  onCardPicked,
+  selectedCard,
+  countdownActive // 👈 new prop to control interaction
+}) {
   const [message, setMessage] = useState('');
 
   const handlePick = async (cardId) => {
-    if (selectedCard) return; // Disable if already picked
-    const res = await pickCard(cardId, userId, roundId);
-    setMessage(res.message || 'ካርድ ተሰጥቷል');
+    if (!countdownActive) return; // ⛔ prevent picking after countdown
+    setMessage(`You selected card ${cardId}`);
     onCardPicked(cardId);
+
+    // Optional: send to backend only after countdown ends
+    // const res = await pickCard(cardId, userId, roundId);
+    // setMessage(res.message || 'ካርድ ተሰጥቷል');
   };
 
   return (
@@ -25,7 +34,7 @@ export default function CardGrid({ userId, roundId, onCardPicked, selectedCard }
               key={cardId}
               onClick={() => handlePick(cardId)}
               className={isPicked ? 'selected' : ''}
-              disabled={!!selectedCard}
+              disabled={!countdownActive}
             >
               {cardId}
             </button>
