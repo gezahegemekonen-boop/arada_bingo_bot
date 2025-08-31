@@ -1,6 +1,7 @@
 // src/components/CardGrid.js
 import { useState } from 'react';
 import { pickCard } from '../api';
+import './CardGrid.css'; // ✅ Importing styles
 
 export default function CardGrid({ userId, roundId, onCardPicked }) {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -9,7 +10,7 @@ export default function CardGrid({ userId, roundId, onCardPicked }) {
   const handlePick = async (cardId) => {
     setSelectedCard(cardId);
     const res = await pickCard(cardId, userId, roundId);
-    setMessage(res.message || 'Card submitted');
+    setMessage(res.message || 'ካርድ ተሰጥቷል');
     onCardPicked(cardId); // notify parent
   };
 
@@ -27,8 +28,7 @@ export default function CardGrid({ userId, roundId, onCardPicked }) {
           </button>
         ))}
       </div>
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
     </div>
   );
 }
-
