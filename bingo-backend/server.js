@@ -11,7 +11,7 @@ import adminRoute from './routes/admin.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // 🛠️ Resolve __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -34,11 +34,11 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true
 })
 .then(() => {
-  console.log('✅ MongoDB connected');
+  console.log('✅ MongoDB connected (server.js)');
   app.listen(PORT, () => {
-    console.log(`🚀 Bingo backend running on port ${PORT}`);
+    console.log(`🚀 server.js backend running on port ${PORT}`);
   });
 })
 .catch((err) => {
-  console.error('❌ MongoDB connection error:', err.message);
+  console.error('❌ MongoDB connection error (server.js):', err.message);
 });
