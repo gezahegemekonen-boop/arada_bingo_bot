@@ -18,7 +18,7 @@
   border-radius: 8px;
   background-color: #f0f0f0;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .grid button:hover {
@@ -26,9 +26,10 @@
 }
 
 .grid button.selected {
-  background-color: #a0ffa0;
-  border-color: #2e8b57;
+  background-color: #ffd700;         /* Gold highlight */
+  border-color: #ff8c00;             /* Orange border */
   font-weight: bold;
+  box-shadow: 0 0 10px #ffa500;      /* Soft glow */
 }
 
 .grid button:disabled {
