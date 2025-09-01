@@ -1,9 +1,9 @@
-const { validationResult } = require('express-validator');
-const BingoRound = require('../models/BingoRound');
-const { checkWin, generateBingoCard } = require('../utils/bingoLogic');
-const validator = require('validator');
+import { validationResult } from 'express-validator';
+import BingoRound from '../models/BingoRound.js';
+import { checkWin, generateBingoCard } from '../utils/bingoLogic.js';
+import validator from 'validator';
 
-async function playBingo(req, res) {
+export const playBingo = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -58,7 +58,7 @@ async function playBingo(req, res) {
 
       if (language === 'am') {
         console.log('🔊 Amharic audio triggered for winType:', winType);
-        // await playAmharicAudio(winType); // Optional
+        // Optional: await playAmharicAudio(winType);
       }
 
       return res.json({ message: '🎉 You won!', winType });
@@ -69,6 +69,4 @@ async function playBingo(req, res) {
     console.error('❌ playBingo error:', err);
     return res.status(500).json({ error: 'Server error', details: err.message });
   }
-}
-
-module.exports = { playBingo };
+};
