@@ -28,12 +28,15 @@ async function playBingo(req, res) {
   }
 
   try {
+    console.log('🔍 Called numbers:', calledNumbers);
+
     let round = await BingoRound.findOne({ userId, roundId });
 
     // 🎴 Generate new card if round doesn't exist
     if (!round) {
       const card = generateBingoCard();
       round = await BingoRound.create({ userId, roundId, card, stake });
+      console.log('🆕 New card generated:', card);
       return res.json({ message: '🎴 Card generated', card });
     }
 
@@ -44,6 +47,8 @@ async function playBingo(req, res) {
 
     // 🧠 Check for win
     const winType = checkWin(round.card, calledNumbers);
+    console.log('🎯 Win type:', winType);
+
     if (winType) {
       round.hasWon = true;
       round.winType = winType;
@@ -63,7 +68,7 @@ async function playBingo(req, res) {
     // ⏳ No win yet
     return res.json({ message: '⏳ No win yet', card: round.card });
   } catch (err) {
-    console.error('❌ playBingo error:', err); // Full error object for debugging
+    console.error('❌ playBingo error:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 }
