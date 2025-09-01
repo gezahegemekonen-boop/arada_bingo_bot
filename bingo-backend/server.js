@@ -1,44 +1,43 @@
 import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 import playRoute from './routes/play.js';
-import depositRoute from './routes/deposit.js';
-import adminRoute from './routes/admin.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// 🛠️ Resolve __dirname for ES Modules
+// Resolve __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Middleware
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// ✅ API Routes
+// Routes
 app.use('/api', playRoute);
-app.use('/api', depositRoute);
-app.use('/api/admin', adminRoute);
 
-// ✅ Serve frontend (Telegram Web App)
+// Serve frontend
 app.use(express.static(path.join(__dirname, '../bingo-frontend')));
 
-// ✅ MongoDB Connection
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
 .then(() => {
-  console.log('✅ MongoDB connected (server.js)');
+  console.log('✅ MongoDB connected');
   app.listen(PORT, () => {
-    console.log(`🚀 server.js backend running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
   });
 })
 .catch((err) => {
-  console.error('❌ MongoDB connection error (server.js):', err.message);
+  console.error('❌ MongoDB connection error:', err.message);
 });
+
