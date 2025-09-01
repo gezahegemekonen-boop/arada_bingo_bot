@@ -10,4 +10,7 @@ const bingoRoundSchema = new mongoose.Schema({
   stake: { type: Number, required: true }
 });
 
+// Optional: enforce uniqueness per user per round
+bingoRoundSchema.index({ userId: 1, roundId: 1 }, { unique: true });
+
 module.exports = mongoose.model('BingoRound', bingoRoundSchema);
