@@ -2,13 +2,41 @@ body {
   font-family: Arial, sans-serif;
   text-align: center;
   background-color: #f9f9f9;
+  margin: 0;
+  padding: 20px;
+}
+
+header h1 {
+  margin-bottom: 5px;
+}
+
+header p {
+  margin-top: 0;
+  color: #555;
+}
+
+.controls {
+  margin-bottom: 20px;
 }
 
 button {
   padding: 10px 20px;
   font-size: 16px;
-  margin-bottom: 20px;
   cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#loading {
+  margin-top: 10px;
+  font-style: italic;
+  color: #888;
 }
 
 #bingo-card {
@@ -29,8 +57,28 @@ button {
   font-size: 18px;
   font-weight: bold;
   border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
 .bingo-cell.free {
   background-color: #ffd700;
+}
+
+.bingo-cell.selected {
+  background-color: #90ee90;
+  border-color: #2e8b57;
+}
+
+@media (max-width: 500px) {
+  #bingo-card {
+    grid-template-columns: repeat(5, 60px);
+    gap: 8px;
+  }
+
+  .bingo-cell {
+    width: 60px;
+    height: 60px;
+    font-size: 14px;
+  }
 }
