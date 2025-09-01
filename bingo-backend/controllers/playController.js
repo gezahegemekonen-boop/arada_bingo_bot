@@ -1,19 +1,27 @@
+const { validationResult } = require('express-validator');
 const BingoRound = require('../models/BingoRound');
 const { checkWin, generateBingoCard } = require('../utils/bingoLogic');
 const validator = require('validator');
 
 async function playBingo(req, res) {
+  // ✅ Handle validation errors from express-validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  // 🧼 Sanitize inputs
   const rawUserId = req.body.userId;
   const rawRoundId = req.body.roundId;
   const rawStake = req.body.stake;
   const calledNumbers = req.body.calledNumbers;
+  const language = req.body.language || 'en';
 
-  // 🧼 Sanitize inputs
   const userId = validator.trim(rawUserId?.toString() || '');
   const roundId = validator.trim(rawRoundId?.toString() || '');
   const stake = parseInt(rawStake, 10);
 
-  // ✅ Validate inputs
+  // ✅ Manual validation fallback
   if (!validator.isNumeric(userId) || userId.length < 5) {
     return res.status(400).json({ error: 'Invalid userId' });
   }
@@ -58,9 +66,10 @@ async function playBingo(req, res) {
       // await processPayout(userId, stake, winType);
 
       // 🔊 Optional Amharic audio trigger
-      // if (req.body.language === 'am') {
-      //   await playAmharicAudio(winType);
-      // }
+      if (language === 'am') {
+        // await playAmharicAudio(winType);
+        console.log('🔊 Amharic audio triggered for winType:', winType);
+      }
 
       return res.json({ message: '🎉 You won!', winType });
     }
