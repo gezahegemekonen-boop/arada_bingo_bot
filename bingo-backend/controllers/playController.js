@@ -1,5 +1,3 @@
-// arada_bingo_bot/bingo-backend/controllers/playController.js
-
 const BingoRound = require('../models/BingoRound');
 const { checkWin, generateBingoCard } = require('../utils/bingoLogic');
 const validator = require('validator');
