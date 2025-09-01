@@ -2,14 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bingo Game</title>
+  <title>Arada Bingo</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🎉 Arada Bingo</h1>
-  <button onclick="playBingo()">Start Game</button>
+  <header>
+    <h1>🎉 Arada Bingo</h1>
+    <p>Play and win real prizes in Ethiopia!</p>
+  </header>
+
+  <div class="controls">
+    <button onclick="playBingo()">Start Game</button>
+    <div id="loading" style="display:none;">Loading your card...</div>
+  </div>
+
   <div id="bingo-card"></div>
 
   <script src="script.js"></script>
+  <script>
+    // Telegram Web App integration
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
+  </script>
 </body>
 </html>
