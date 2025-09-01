@@ -62,4 +62,3 @@ function generateBingoCard() {
 }
 
 module.exports = { checkWin, generateBingoCard };
-
