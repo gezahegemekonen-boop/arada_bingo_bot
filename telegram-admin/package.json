@@ -1,7 +1,6 @@
 {
   "name": "telegram-admin",
   "version": "1.0.0",
-  "description": "Admin bot for approving and rejecting Bingo transactions via Telegram",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
