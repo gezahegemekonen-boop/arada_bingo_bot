@@ -1,8 +1,7 @@
-// commands/player/startgame.js
-
+// commands/startgame.js
 const Player = require('../models/Player');
 const numberCaller = require('../utils/numberCaller');
-const { generateCard } = require('../utils/cardGenerator');
+const { generateCard } = require('../utils/cardGenerator'); 
 const { endRound } = require('../game/roundManager');
 
 module.exports = (bot) => {
@@ -16,7 +15,7 @@ module.exports = (bot) => {
         return bot.sendMessage(chatId, '🚫 No approved players found.');
       }
 
-      // Assign fresh cards to each player
+      // Assign fresh Bingo cards to each player
       for (let player of players) {
         const newCard = generateCard(); // 5x5 Bingo card
         player.card = newCard;
@@ -26,22 +25,21 @@ module.exports = (bot) => {
           ? '🆕 አዲስ ቢንጎ ካርድ ተሰጠዎት።'
           : '🆕 A new Bingo card has been assigned to you.';
 
-        await bot.sendMessage(player.telegramId, msgText);
+        bot.sendMessage(player.telegramId, msgText);
       }
 
       // Start number calling
       numberCaller.start(players, bot.sendMessage);
 
-      // End round after 5 minutes (adjust as needed)
+      // End round after 5 minutes (adjust time as needed)
       setTimeout(() => {
-        endRound(players);
+        endRound(players, bot);
       }, 5 * 60 * 1000);
 
-      // Notify the admin or starter
-      await bot.sendMessage(chatId, '🎲 Bingo game started!');
+      bot.sendMessage(chatId, '🎮 Bingo round started! Cards assigned and numbers will be called shortly.');
     } catch (err) {
       console.error('❌ Error starting game:', err);
-      await bot.sendMessage(chatId, '⚠️ Something went wrong while starting the game.');
+      bot.sendMessage(chatId, '⚠️ Failed to start the game. Please try again later.');
     }
   });
 };
