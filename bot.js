@@ -16,7 +16,7 @@ require('./commands/player/start')(bot);         // Handles /start + referral
 require('./commands/player/instruction')(bot);   // Bilingual game guide
 require('./commands/player/deposit')(bot);       // Deposit with location + referral bonus
 require('./commands/player/convert')(bot);       // Convert balance to coins
-require('./commands/player/play')(bot);          // Start Bingo
+require('./commands/player/play')(bot);          // Start Bingo (placeholder)
 require('./commands/player/balance')(bot);       // Show wallet + coins
 require('./commands/player/withdraw')(bot);      // Cash out
 require('./commands/player/transaction')(bot);   // View history
