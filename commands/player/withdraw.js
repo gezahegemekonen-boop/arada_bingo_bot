@@ -1,22 +1,20 @@
 // commands/player/withdraw.js
-
-const Player = require('../../models/Player');
-const Transaction = require('../../models/Transaction');
+const Player = require('../../models/Player');         // Adjust path if needed
+const Transaction = require('../../models/Transaction'); // Adjust path if needed
 
 module.exports = (bot) => {
   bot.onText(/\/withdraw (\d+)/, async (msg, match) => {
-    const chatId = msg.chat.id;
+    const amount = parseInt(match[1]);
     const telegramId = msg.from.id.toString();
-    const amount = match && match[1] ? parseInt(match[1]) : 0;
 
     try {
       const player = await Player.findOne({ telegramId });
 
-      if (!player || (player.wallet ?? 0) < amount) {
+      if (!player || player.balance < amount) {
         const reply = player?.language === 'am'
           ? '❌ በቂ ቀሪ አልተገኘም።'
           : '❌ Insufficient balance.';
-        return bot.sendMessage(chatId, reply);
+        return bot.sendMessage(telegramId, reply);
       }
 
       // Save withdrawal request
@@ -24,7 +22,7 @@ module.exports = (bot) => {
         type: 'withdraw',
         amount,
         playerId: telegramId,
-        approved: false,
+        approved: false
       });
 
       // Confirmation message
@@ -32,18 +30,17 @@ module.exports = (bot) => {
         ? '📤 የመውጣት ጥያቄ ተላከ። እባክዎ አስተማማኝ እንዲያደርጉት ይጠብቁ።'
         : '📤 Withdrawal request submitted. Please wait for admin approval.';
 
-      await bot.sendMessage(chatId, reply);
+      await bot.sendMessage(telegramId, reply);
 
       // Ask for payout method
       const followUp = player.language === 'am'
         ? '📱 እባክዎ የመቀበል መንገድን ያስገቡ፦\n/receive <ስልክ ቁጥር> <መንገድ>\n\nምሳሌ፦ /receive 0920927761 Telebirr'
         : '📱 Please enter your payout method:\n/receive <phone number> <method>\n\nExample: /receive 0920927761 Telebirr';
 
-      await bot.sendMessage(chatId, followUp);
-
+      await bot.sendMessage(telegramId, followUp);
     } catch (err) {
       console.error('❌ Error in /withdraw:', err);
-      await bot.sendMessage(chatId, '⚠️ Something went wrong. Please try again later.');
+      bot.sendMessage(telegramId, '⚠️ Something went wrong. Please try again later.');
     }
   });
 };
