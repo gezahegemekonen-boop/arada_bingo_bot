@@ -1,20 +1,23 @@
-const { User } = require('../../models/User'); // adjust path as needed
+// commands/player/invite.js
 
-module.exports = function(bot) {
+const { User } = require('../../models/User');
+
+module.exports = function (bot) {
   bot.onText(/\/invite/, async (msg) => {
     const chatId = msg.chat.id;
-    const userId = msg.from.id;
+    const userId = msg.from.id.toString();
 
-    // Save referral ID if not already saved
-    let user = await User.findOne({ telegramId: userId });
-    if (!user) {
-      user = new User({ telegramId: userId });
-      await user.save();
-    }
+    try {
+      // Save referral ID if not already saved
+      let user = await User.findOne({ telegramId: userId });
+      if (!user) {
+        user = new User({ telegramId: userId });
+        await user.save();
+      }
 
-    const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${userId}`;
+      const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${userId}`;
 
-    const message = `
+      const message = `
 🎉 Invite friends and earn coins!
 
 🔗 Your referral link: [Click to share](${referralLink})
@@ -29,6 +32,10 @@ module.exports = function(bot) {
 Let’s grow the Bingo community 🇪🇹
 `;
 
-    bot.sendMessage(chatId, message, { parse_mode: 'Markdown' });
+      await bot.sendMessage(chatId, message, { parse_mode: 'Markdown' });
+    } catch (err) {
+      console.error('❌ Error in /invite:', err);
+      await bot.sendMessage(chatId, '⚠️ Something went wrong while generating your referral link.');
+    }
   });
 };
