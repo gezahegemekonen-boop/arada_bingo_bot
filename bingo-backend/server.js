@@ -1,3 +1,4 @@
+// server.js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -20,10 +21,15 @@ const __dirname = path.dirname(__filename);
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Health check route
+app.get('/api/health', (req, res) => {
+  res.send('✅ Server is running');
+});
+
+// API routes
 app.use('/api', playRoute);
 
-// Serve frontend
+// Serve frontend (optional, if you're hosting it together)
 app.use(express.static(path.join(__dirname, '../bingo-frontend')));
 
 // MongoDB connection
