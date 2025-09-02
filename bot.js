@@ -1,7 +1,11 @@
+// bot.js
 require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
+const fs = require('fs');
+const path = require('path');
 
+// Initialize bot
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
 // 🌐 Connect to MongoDB
@@ -11,38 +15,49 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB error:', err));
 
-// 🧩 Player Commands
-require('./commands/player/start')(bot);         // Handles /start + referral
-require('./commands/player/instruction')(bot);   // Bilingual game guide
-require('./commands/player/deposit')(bot);       // Deposit with location + referral bonus
-require('./commands/player/convert')(bot);       // Convert balance to coins
-require('./commands/player/play')(bot);          // Start Bingo (placeholder)
-require('./commands/player/balance')(bot);       // Show wallet + coins
-require('./commands/player/withdraw')(bot);      // Cash out
-require('./commands/player/transaction')(bot);   // View history
-require('./commands/player/language')(bot);      // Switch language
-require('./commands/player/invite')(bot);        // Referral system (invite link)
-require('./commands/player/referrals')(bot);     // 👥 Track referrals + coins earned
-require('./commands/player/leaderboard')(bot);   // 🏆 Top referrers
-require('./commands/player/bonus')(bot);         // 🎁 Daily bonus
-require('./commands/player/demo')(bot);          // Optional demo mode
+// 🧩 Helper function to load commands dynamically
+function loadCommands(dir) {
+  fs.readdirSync(dir).forEach(file => {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
 
-// 🛠️ Admin Commands
-require('./commands/admin/approve')(bot);        // Approve deposits
-require('./commands/admin/reject')(bot);         // Reject deposits
-require('./commands/admin/pending')(bot);        // View pending list
+    if (stat.isDirectory()) {
+      loadCommands(fullPath); // Recursively load subdirectories
+    } else if (file.endsWith('.js')) {
+      try {
+        require(fullPath)(bot);
+        console.log(`🟢 Loaded command: ${fullPath}`);
+      } catch (err) {
+        console.error(`❌ Failed to load ${fullPath}:`, err);
+      }
+    }
+  });
+}
+
+// Load player and admin commands
+loadCommands(path.join(__dirname, 'commands'));
 
 // ✅ Health check command
-bot.onText(/\/health/, (msg) => {
-  bot.sendMessage(msg.chat.id, '✅ Bot is alive and running.');
+bot.onText(/\/health/, async (msg) => {
+  try {
+    await bot.sendMessage(msg.chat.id, '✅ Bot is alive and running.');
+  } catch (err) {
+    console.error('❌ Error sending health message:', err);
+  }
 });
 
 // 🧠 Fallback for unknown messages
-bot.on('message', (msg) => {
-  if (!msg.text.startsWith('/')) {
-    bot.sendMessage(msg.chat.id, '🤖 Please use a command like /instruction or /play to get started.');
+bot.on('message', async (msg) => {
+  try {
+    if (!msg.text.startsWith('/')) {
+      await bot.sendMessage(msg.chat.id, '🤖 Please use a command like /instruction or /play to get started.');
+    }
+  } catch (err) {
+    console.error('❌ Error in fallback message:', err);
   }
 });
 
 // 🚀 Startup confirmation
 console.log('✅ Telegram Bingo bot is live and polling for commands');
+
+module.exports = bot;
