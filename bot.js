@@ -32,6 +32,11 @@ require('./commands/admin/approve')(bot);        // Approve deposits
 require('./commands/admin/reject')(bot);         // Reject deposits
 require('./commands/admin/pending')(bot);        // View pending list
 
+// ✅ Health check command
+bot.onText(/\/health/, (msg) => {
+  bot.sendMessage(msg.chat.id, '✅ Bot is alive and running.');
+});
+
 // 🧠 Fallback for unknown messages
 bot.on('message', (msg) => {
   if (!msg.text.startsWith('/')) {
