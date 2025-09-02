@@ -6,6 +6,7 @@ import validator from 'validator';
 export const playBingo = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.warn('⚠️ Validation errors:', errors.array());
     return res.status(400).json({ errors: errors.array() });
   }
 
@@ -19,37 +20,39 @@ export const playBingo = async (req, res) => {
   const roundId = validator.trim(rawRoundId?.toString() || '');
   const stake = parseInt(rawStake, 10);
 
+  // ✅ Input validation
   if (!validator.isNumeric(userId) || userId.length < 5) {
-    return res.status(400).json({ error: 'Invalid userId' });
+    return res.status(400).json({ error: 'Invalid userId format' });
   }
   if (!roundId || roundId.length < 3) {
-    return res.status(400).json({ error: 'Invalid roundId' });
+    return res.status(400).json({ error: 'Invalid roundId format' });
   }
   if (isNaN(stake) || stake <= 0) {
-    return res.status(400).json({ error: 'Invalid stake amount' });
+    return res.status(400).json({ error: 'Stake must be a positive number' });
   }
   if (!Array.isArray(calledNumbers) || calledNumbers.length < 5) {
-    return res.status(400).json({ error: 'Invalid calledNumbers' });
+    return res.status(400).json({ error: 'calledNumbers must be an array of at least 5 numbers' });
   }
 
   try {
-    console.log('🔍 Called numbers:', calledNumbers);
+    console.log('🔍 Incoming play request:', { userId, roundId, stake, calledNumbers });
 
     let round = await BingoRound.findOne({ userId, roundId });
 
     if (!round) {
       const card = generateBingoCard();
       round = await BingoRound.create({ userId, roundId, card, stake });
-      console.log('🆕 New card generated:', card);
+      console.log('🆕 New card generated for user:', userId);
       return res.json({ message: '🎴 Card generated', card });
     }
 
     if (round.hasWon) {
+      console.log('✅ User already won:', { userId, roundId, winType: round.winType });
       return res.json({ message: '✅ Already won', winType: round.winType });
     }
 
     const winType = checkWin(round.card, calledNumbers);
-    console.log('🎯 Win type:', winType);
+    console.log('🎯 Win check result:', winType);
 
     if (winType) {
       round.hasWon = true;
@@ -67,6 +70,9 @@ export const playBingo = async (req, res) => {
     return res.json({ message: '⏳ No win yet', card: round.card });
   } catch (err) {
     console.error('❌ playBingo error:', err);
-    return res.status(500).json({ error: 'Server error', details: err.message });
+    return res.status(500).json({
+      error: 'Server error',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 };
