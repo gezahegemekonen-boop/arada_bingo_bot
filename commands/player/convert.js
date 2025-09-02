@@ -12,12 +12,16 @@ module.exports = (bot) => {
         return bot.sendMessage(chatId, '🙈 Player not found.');
       }
 
-      // Example conversion logic
-      const coinsToAdd = 10; // Replace with real conversion logic
-      player.coins += coinsToAdd;
+      // Example conversion logic — replace with your real logic
+      const coinsToAdd = 10; // Conversion amount
+      player.coins = (player.coins || 0) + coinsToAdd;
       await player.save();
 
-      bot.sendMessage(chatId, `✅ Balance converted to ${coinsToAdd} coins for user ${telegramId}.`);
+      const message = player.language === 'am'
+        ? `✅ ቀሪ ባለው ተጫዋች ገንዘብ ${coinsToAdd} ኮይን ተጨመረ።`
+        : `✅ Balance converted to ${coinsToAdd} coins.`;
+
+      bot.sendMessage(chatId, message);
     } catch (err) {
       console.error('❌ Error in /convert:', err);
       bot.sendMessage(chatId, '⚠️ Something went wrong. Please try again later.');
