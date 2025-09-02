@@ -4,7 +4,7 @@ import BingoRound from '../models/BingoRound.js';
 
 const router = express.Router();
 
-// Optional: Simple admin token check
+// 🔐 Simple admin token check
 const requireAdmin = (req, res, next) => {
   const token = req.headers['x-admin-token'];
   if (token !== process.env.ADMIN_SECRET) {
@@ -98,6 +98,32 @@ router.get('/pending-payouts', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('❌ Fetch pending payouts error:', err.message);
     res.status(500).json({ error: 'Failed to fetch pending payouts' });
+  }
+});
+
+// 📈 Game stats summary
+router.get('/stats', requireAdmin, async (req, res) => {
+  try {
+    const totalDeposits = await Transaction.aggregate([
+      { $match: { status: 'approved' } },
+      { $group: { _id: null, sum: { $sum: '$amount' } } }
+    ]);
+
+    const totalPayouts = await BingoRound.aggregate([
+      { $match: { isPaid: true } },
+      { $group: { _id: null, sum: { $sum: '$payoutAmount' } } }
+    ]);
+
+    const activeUsers = await BingoRound.distinct('userId');
+
+    res.json({
+      totalDeposits: totalDeposits[0]?.sum || 0,
+      totalPayouts: totalPayouts[0]?.sum || 0,
+      activeUsers: activeUsers.length
+    });
+  } catch (err) {
+    console.error('❌ Stats fetch error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 
