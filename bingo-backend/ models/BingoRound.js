@@ -30,9 +30,17 @@ const bingoRoundSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  payoutAmount: {
+    type: Number,
+    default: 0
+  },
+  isPaid: {
+    type: Boolean,
+    default: false
+  },
   status: {
     type: String,
-    enum: ["pending", "won", "expired"],
+    enum: ["pending", "won", "expired", "paid"],
     default: "pending"
   },
   isDemo: {
