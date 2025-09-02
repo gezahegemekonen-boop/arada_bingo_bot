@@ -1,7 +1,11 @@
+// Check for row win
 function checkRowWin(card, calledNumbers) {
-  return card.some(row => row.every(num => num === "FREE" || calledNumbers.includes(num)));
+  return card.some(row =>
+    row.every(num => num === "FREE" || calledNumbers.includes(num))
+  );
 }
 
+// Check for column win
 function checkColumnWin(card, calledNumbers) {
   for (let col = 0; col < 5; col++) {
     let win = true;
@@ -17,12 +21,18 @@ function checkColumnWin(card, calledNumbers) {
   return false;
 }
 
+// Check for diagonal win
 function checkDiagonalWin(card, calledNumbers) {
-  const leftToRight = card.every((row, i) => row[i] === "FREE" || calledNumbers.includes(row[i]));
-  const rightToLeft = card.every((row, i) => row[4 - i] === "FREE" || calledNumbers.includes(row[4 - i]));
+  const leftToRight = card.every((row, i) =>
+    row[i] === "FREE" || calledNumbers.includes(row[i])
+  );
+  const rightToLeft = card.every((row, i) =>
+    row[4 - i] === "FREE" || calledNumbers.includes(row[4 - i])
+  );
   return leftToRight || rightToLeft;
 }
 
+// Check for four corners win
 function checkFourCorners(card, calledNumbers) {
   const corners = [
     card[0][0], card[0][4],
@@ -31,7 +41,8 @@ function checkFourCorners(card, calledNumbers) {
   return corners.every(num => calledNumbers.includes(num));
 }
 
-function checkWin(card, calledNumbers) {
+// Master win checker
+export function checkWin(card, calledNumbers) {
   if (checkRowWin(card, calledNumbers)) return "row";
   if (checkColumnWin(card, calledNumbers)) return "column";
   if (checkDiagonalWin(card, calledNumbers)) return "diagonal";
@@ -39,7 +50,8 @@ function checkWin(card, calledNumbers) {
   return null;
 }
 
-function generateBingoCard() {
+// Generate a 5x5 Bingo card with column ranges and center FREE
+export function generateBingoCard() {
   const card = [];
   const ranges = [
     [1, 15], [16, 30], [31, 45], [46, 60], [61, 75]
@@ -60,5 +72,3 @@ function generateBingoCard() {
   card[2][2] = "FREE";
   return card;
 }
-
-module.exports = { checkWin, generateBingoCard };
