@@ -57,7 +57,13 @@ export const playBingo = async (req, res) => {
 
     if (round.hasWon) {
       console.log('✅ User already won:', { userId, roundId, winType: round.winType });
-      return res.json({ message: '✅ Already won', winType: round.winType });
+      return res.json({
+        message: '✅ Already won',
+        winType: round.winType,
+        payoutAmount: round.payoutAmount,
+        isPaid: round.isPaid,
+        card: round.card
+      });
     }
 
     const winType = checkWin(round.card, calledNumbers);
@@ -67,6 +73,8 @@ export const playBingo = async (req, res) => {
       round.hasWon = true;
       round.winType = winType;
       round.status = 'won';
+      round.payoutAmount = stake * 2; // 💸 Customize your payout formula here
+      round.isPaid = false; // 🛂 Awaiting admin approval
       await round.save();
 
       if (language === 'am') {
@@ -74,7 +82,13 @@ export const playBingo = async (req, res) => {
         // Optional: await playAmharicAudio(winType);
       }
 
-      return res.json({ message: '🎉 You won!', winType });
+      return res.json({
+        message: '🎉 You won!',
+        winType,
+        payoutAmount: round.payoutAmount,
+        isPaid: false,
+        card: round.card
+      });
     }
 
     return res.json({ message: '⏳ No win yet', card: round.card });
