@@ -5,8 +5,17 @@ const Player = require('../../models/Player');
 
 module.exports = (bot) => {
   bot.onText(/\/reject (\w+)/, async (msg, match) => {
+    const adminId = msg.from.id.toString();
+
+    if (adminId !== process.env.ADMIN_ID) {
+      return bot.sendMessage(msg.chat.id, '❌ Unauthorized.');
+    }
+
+    if (!match || !match[1]) {
+      return bot.sendMessage(adminId, '⚠️ Usage: /reject <transactionId>');
+    }
+
     const txId = match[1];
-    const adminId = msg.from.id;
 
     try {
       const transaction = await Transaction.findById(txId);
@@ -15,7 +24,7 @@ module.exports = (bot) => {
         return bot.sendMessage(adminId, '❌ Transaction not found or not a withdrawal.');
       }
 
-      if (transaction.approved === false && transaction.rejected === true) {
+      if (transaction.rejected === true) {
         return bot.sendMessage(adminId, '⚠️ This transaction has already been rejected.');
       }
 
@@ -33,8 +42,9 @@ module.exports = (bot) => {
       await bot.sendMessage(adminId, `✅ Transaction ${txId} rejected and user notified.`);
     } catch (err) {
       console.error('❌ Error in /reject:', err);
-      bot.sendMessage(adminId, '⚠️ Something went wrong while rejecting the transaction.');
+      await bot.sendMessage(adminId, '⚠️ Something went wrong while rejecting the transaction.');
     }
   });
 };
+
 
