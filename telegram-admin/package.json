@@ -1,0 +1,19 @@
+{
+  "name": "telegram-admin",
+  "version": "1.0.0",
+  "description": "Admin bot for approving and rejecting Bingo transactions via Telegram",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.61.0",
+    "axios": "^1.6.7",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "author": "Mekonen",
+  "license": "MIT"
+}
