@@ -2,7 +2,6 @@
   "name": "arada-bingo-bot",
   "version": "1.0.0",
   "description": "Real-money Bingo bot for Telegram with Amharic audio and payment integration",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
