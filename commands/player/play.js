@@ -1,7 +1,7 @@
 // commands/player/play.js
 
 module.exports = (bot) => {
-  bot.command('play', async (ctx) => {
-    await ctx.reply('🎮 Bingo play logic coming soon!');
+  bot.onText(/\/play/, async (msg) => {
+    bot.sendMessage(msg.chat.id, '🎮 Bingo play logic coming soon!');
   });
 };
