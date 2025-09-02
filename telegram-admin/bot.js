@@ -1,14 +1,12 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-import TelegramBot from 'node-telegram-bot-api';
-import handlePendingDeposits from './commands/pendingDeposits.js';
-import handlePendingPayouts from './commands/pendingPayouts.js';
-import handleCallback from './commands/callbackHandler.js';
-import handleStats from './commands/stats.js';
-import handleApprove from './commands/approve.js';
-import handleReject from './commands/reject.js';
-import { isAdmin } from './utils/auth.js';
+require('dotenv').config();
+const TelegramBot = require('node-telegram-bot-api');
+const handlePendingDeposits = require('./commands/pendingDeposits');
+const handlePendingPayouts = require('./commands/pendingPayouts');
+const handleCallback = require('./commands/callbackHandler');
+const handleStats = require('./commands/stats');
+const handleApprove = require('./commands/approve');
+const handleReject = require('./commands/reject');
+const { isAdmin } = require('./utils/auth');
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
