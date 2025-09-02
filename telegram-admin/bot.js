@@ -1,12 +1,13 @@
-import TelegramBot from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
+dotenv.config();
+
+import TelegramBot from 'node-telegram-bot-api';
 import handlePendingDeposits from './commands/pendingDeposits.js';
 import handlePendingPayouts from './commands/pendingPayouts.js';
 import handleCallback from './commands/callbackHandler.js';
 import handleStats from './commands/stats.js';
 import { isAdmin } from './utils/auth.js';
 
-dotenv.config();
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
 bot.onText(/\/pending_deposits/, (msg) => {
