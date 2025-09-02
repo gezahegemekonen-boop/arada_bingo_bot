@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import playRoute from './routes/play.js';
+import adminRoute from './routes/admin.js';
 
 dotenv.config();
 
@@ -27,9 +28,10 @@ app.get('/api/health', (req, res) => {
 });
 
 // API routes
-app.use('/api', playRoute);
+app.use('/api/play', playRoute);
+app.use('/api/admin', adminRoute);
 
-// Serve frontend (optional, if you're hosting it together)
+// Serve frontend (optional)
 app.use(express.static(path.join(__dirname, '../bingo-frontend')));
 
 // MongoDB connection
