@@ -2,62 +2,71 @@
 require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
 
-// Initialize bot
+// 🚀 Initialize bot
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
 // 🌐 Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}).then(() => console.log('✅ MongoDB connected'))
+})
+  .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB error:', err));
 
-// 🧩 Helper function to load commands dynamically
-function loadCommands(dir) {
-  fs.readdirSync(dir).forEach(file => {
-    const fullPath = path.join(dir, file);
-    const stat = fs.statSync(fullPath);
-
-    if (stat.isDirectory()) {
-      loadCommands(fullPath); // Recursively load subdirectories
-    } else if (file.endsWith('.js')) {
-      try {
-        require(fullPath)(bot);
-        console.log(`🟢 Loaded command: ${fullPath}`);
-      } catch (err) {
-        console.error(`❌ Failed to load ${fullPath}:`, err);
+// ⚡ Helper to load commands safely
+const loadCommands = (commands) => {
+  commands.forEach((cmdPath) => {
+    try {
+      const command = require(cmdPath);
+      if (typeof command === 'function') {
+        command(bot);
+      } else {
+        console.warn(`⚠️ Command at ${cmdPath} is not a function.`);
       }
+    } catch (err) {
+      console.error(`❌ Failed to load ${cmdPath}:`, err);
     }
   });
-}
+};
 
-// Load player and admin commands
-loadCommands(path.join(__dirname, 'commands'));
+// 🧩 Player Commands
+loadCommands([
+  './commands/player/start',
+  './commands/player/instruction',
+  './commands/player/deposit',
+  './commands/player/convert',  // Fixed convert.js
+  './commands/player/play',
+  './commands/player/balance',
+  './commands/player/withdraw',
+  './commands/player/transaction',
+  './commands/player/language',
+  './commands/player/invite',
+  './commands/player/referrals',
+  './commands/player/leaderboard',
+  './commands/player/bonus',
+  './commands/player/demo',
+]);
 
-// ✅ Health check command
-bot.onText(/\/health/, async (msg) => {
-  try {
-    await bot.sendMessage(msg.chat.id, '✅ Bot is alive and running.');
-  } catch (err) {
-    console.error('❌ Error sending health message:', err);
-  }
+// 🛠️ Admin Commands
+loadCommands([
+  './commands/admin/approve',
+  './commands/admin/reject',
+  './commands/admin/pending',
+]);
+
+// ✅ Health check
+bot.onText(/\/health/, (msg) => {
+  bot.sendMessage(msg.chat.id, '✅ Bot is alive and running.');
 });
 
 // 🧠 Fallback for unknown messages
-bot.on('message', async (msg) => {
-  try {
-    if (!msg.text.startsWith('/')) {
-      await bot.sendMessage(msg.chat.id, '🤖 Please use a command like /instruction or /play to get started.');
-    }
-  } catch (err) {
-    console.error('❌ Error in fallback message:', err);
+bot.on('message', (msg) => {
+  if (!msg.text.startsWith('/')) {
+    bot.sendMessage(msg.chat.id, '🤖 Please use a command like /instruction or /play to get started.');
   }
 });
 
-// 🚀 Startup confirmation
 console.log('✅ Telegram Bingo bot is live and polling for commands');
 
-module.exports = bot;
+module.exports = bot; // Export bot if needed elsewhere
