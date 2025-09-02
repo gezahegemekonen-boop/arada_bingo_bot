@@ -38,3 +38,6 @@ bot.on('message', (msg) => {
     bot.sendMessage(msg.chat.id, '🤖 Please use a command like /instruction or /play to get started.');
   }
 });
+
+// 🚀 Startup confirmation
+console.log('✅ Telegram Bingo bot is live and polling for commands');
