@@ -10,11 +10,13 @@ export const playBingo = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const rawUserId = req.body.userId;
-  const rawRoundId = req.body.roundId;
-  const rawStake = req.body.stake;
-  const calledNumbers = req.body.calledNumbers;
-  const language = req.body.language || 'en';
+  const {
+    userId: rawUserId,
+    roundId: rawRoundId,
+    stake: rawStake,
+    calledNumbers,
+    language = 'en'
+  } = req.body;
 
   const userId = validator.trim(rawUserId?.toString() || '');
   const roundId = validator.trim(rawRoundId?.toString() || '');
@@ -41,7 +43,14 @@ export const playBingo = async (req, res) => {
 
     if (!round) {
       const card = generateBingoCard();
-      round = await BingoRound.create({ userId, roundId, card, stake });
+      round = await BingoRound.create({
+        userId,
+        roundId,
+        card,
+        stake,
+        status: 'pending',
+        isDemo: false
+      });
       console.log('🆕 New card generated for user:', userId);
       return res.json({ message: '🎴 Card generated', card });
     }
@@ -57,6 +66,7 @@ export const playBingo = async (req, res) => {
     if (winType) {
       round.hasWon = true;
       round.winType = winType;
+      round.status = 'won';
       await round.save();
 
       if (language === 'am') {
