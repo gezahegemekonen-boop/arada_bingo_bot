@@ -2,6 +2,22 @@ import { validationResult } from 'express-validator';
 import BingoRound from '../models/BingoRound.js';
 import { checkWin, generateBingoCard } from '../utils/bingoLogic.js';
 import validator from 'validator';
+import fetch from 'node-fetch';
+
+const notifyAdmin = async (message) => {
+  try {
+    await fetch(`https://api.telegram.org/bot${process.env.ADMIN_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: process.env.ADMIN_CHAT_ID,
+        text: message
+      })
+    });
+  } catch (err) {
+    console.error('❌ Failed to notify admin:', err.message);
+  }
+};
 
 export const playBingo = async (req, res) => {
   const errors = validationResult(req);
@@ -22,7 +38,6 @@ export const playBingo = async (req, res) => {
   const roundId = validator.trim(rawRoundId?.toString() || '');
   const stake = parseInt(rawStake, 10);
 
-  // ✅ Input validation
   if (!validator.isNumeric(userId) || userId.length < 5) {
     return res.status(400).json({ error: 'Invalid userId format' });
   }
@@ -73,14 +88,16 @@ export const playBingo = async (req, res) => {
       round.hasWon = true;
       round.winType = winType;
       round.status = 'won';
-      round.payoutAmount = stake * 2; // 💸 Customize your payout formula here
-      round.isPaid = false; // 🛂 Awaiting admin approval
+      round.payoutAmount = stake * 2; // Customize payout logic
+      round.isPaid = false;
       await round.save();
 
       if (language === 'am') {
         console.log('🔊 Amharic audio triggered for winType:', winType);
-        // Optional: await playAmharicAudio(winType);
+        // Optional: trigger frontend audio or send audio via Telegram
       }
+
+      await notifyAdmin(`🎉 User ${userId} won via ${winType}. Round: ${roundId}, payout: ${round.payoutAmount}`);
 
       return res.json({
         message: '🎉 You won!',
