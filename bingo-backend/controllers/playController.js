@@ -1,26 +1,69 @@
-const Player = require('../models/Player');
-const Round = require('../models/BingoRound');
-const generateCard = require('../helpers/generateCard');
+import Player from '../models/Player.js';
+import Round from '../models/BingoRound.js';
+import generateCard from '../helpers/generateCard.js';
 
-// Get all players
-exports.getAllPlayers = async (req, res) => {
+export const getAllPlayers = async (req, res) => {
   try {
     const players = await Player.find();
     res.status(200).json(players);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error while fetching players' });
   }
 };
 
-// Play Bingo
-exports.playBingo = async (req, res) => {
+export const getPlayer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ message: 'Missing telegramId' });
+
+    const player = await Player.findOne({ telegramId: id });
+    if (!player) return res.status(404).json({ message: 'Player not found' });
+
+    res.status(200).json(player);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error while fetching player' });
+  }
+};
+
+export const updatePlayer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { wallet, coins } = req.body;
+
+    if (!id) return res.status(400).json({ message: 'Missing telegramId' });
+
+    const player = await Player.findOne({ telegramId: id });
+    if (!player) return res.status(404).json({ message: 'Player not found' });
+
+    if (wallet !== undefined) {
+      if (typeof wallet !== 'number' || wallet < 0)
+        return res.status(400).json({ message: 'Invalid wallet value' });
+      player.balance = wallet;
+    }
+
+    if (coins !== undefined) {
+      if (typeof coins !== 'number' || coins < 0)
+        return res.status(400).json({ message: 'Invalid coins value' });
+      player.coins = coins;
+    }
+
+    await player.save();
+    res.status(200).json(player);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error while updating player' });
+  }
+};
+
+export const playBingo = async (req, res) => {
   const { userId } = req.body;
 
   try {
     const player = await Player.findOne({ telegramId: userId });
     if (!player) return res.status(404).json({ message: 'Player not found' });
-    if (player.coins < 1) return res.status(400).json({ message: 'Not enough coins' });
+    if (player.coins < 1) return res.status(400).json({ message: 'Not enough coins to play' });
 
     player.coins -= 1;
     await player.save();
@@ -38,7 +81,12 @@ exports.playBingo = async (req, res) => {
       status: isWin ? 'won' : 'pending'
     });
 
-    res.status(200).json({ success: true, result: isWin ? 'win' : 'lose', card, coinsLeft: player.coins });
+    res.status(200).json({
+      success: true,
+      result: isWin ? 'win' : 'lose',
+      card,
+      coinsLeft: player.coins
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error while playing Bingo' });
