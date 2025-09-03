@@ -29,7 +29,7 @@ exports.getPlayer = async (req, res) => {
   }
 };
 
-// ✅ Update player wallet and coins
+// ✅ Update player balance and coins
 exports.updatePlayer = async (req, res) => {
   try {
     const { id } = req.params;
@@ -44,7 +44,7 @@ exports.updatePlayer = async (req, res) => {
       if (typeof wallet !== 'number' || wallet < 0) {
         return res.status(400).json({ message: 'Invalid wallet value' });
       }
-      player.wallet = wallet;
+      player.balance = wallet; // ✅ fix: schema uses balance, not wallet
     }
 
     if (coins !== undefined) {
