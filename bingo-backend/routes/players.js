@@ -1,16 +1,10 @@
-const express = require('express');
-const { body, param } = require('express-validator');
-const { getAllPlayers, getPlayer, updatePlayer } = require('../controllers/playController');
+import express from 'express';
+import { getAllPlayers, getPlayer, updatePlayer } from '../controllers/playController.js';
 
 const router = express.Router();
 
-// GET all players
 router.get('/', getAllPlayers);
+router.get('/:id', getPlayer);
+router.put('/:id', updatePlayer);
 
-// GET single player by telegramId
-router.get('/:id', param('id').notEmpty().withMessage('telegramId required'), getPlayer);
-
-// PATCH update player
-router.patch('/:id', updatePlayer);
-
-module.exports = router;
+export default router;
