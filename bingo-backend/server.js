@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const playersRoute = require('./routes/players');
-const healthRoute = require('./routes/health'); // ✅ Add this line
+const playRoute = require('./routes/playRoute');
+const healthRoute = require('./routes/health');
 require('dotenv').config();
 
 const app = express();
@@ -12,7 +13,8 @@ app.use(express.json());
 
 // Routes
 app.use('/players', playersRoute);
-app.use('/health', healthRoute); // ✅ Add this line
+app.use('/play', playRoute);
+app.use('/health', healthRoute);
 
 // Root endpoint
 app.get('/', (req, res) => {
