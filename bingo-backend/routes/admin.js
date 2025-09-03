@@ -1,25 +1,21 @@
-import express from 'express';
-import { body, param } from 'express-validator';
-import Transaction from '../models/Transaction.js';
-import BingoRound from '../models/BingoRound.js';
+const express = require('express');
+const { body, param } = require('express-validator');
+const Transaction = require('../models/Transaction');
+const BingoRound = require('../models/BingoRound');
 
 const router = express.Router();
 
-// 🔐 Simple admin token check
+// Admin auth middleware
 const requireAdmin = (req, res, next) => {
   const token = req.headers['x-admin-token'];
-  if (token !== process.env.ADMIN_SECRET) {
-    return res.status(403).json({ error: 'Unauthorized' });
-  }
+  if (token !== process.env.ADMIN_SECRET) return res.status(403).json({ error: 'Unauthorized' });
   next();
 };
 
-// ✅ Approve deposit
+// Approve deposit
 router.post(
   '/approve/:id',
   requireAdmin,
-  param('id').isMongoId().withMessage('Invalid transaction ID'),
-  body('adminNote').optional().isString(),
   async (req, res) => {
     try {
       const tx = await Transaction.findById(req.params.id);
@@ -32,18 +28,16 @@ router.post(
 
       res.status(200).json({ message: '✅ Deposit approved', transaction: tx });
     } catch (err) {
-      console.error('❌ Deposit approval error:', err.message);
+      console.error(err.message);
       res.status(500).json({ error: 'Approval failed' });
     }
   }
 );
 
-// ❌ Reject deposit
+// Reject deposit
 router.post(
   '/reject/:id',
   requireAdmin,
-  param('id').isMongoId().withMessage('Invalid transaction ID'),
-  body('adminNote').optional().isString(),
   async (req, res) => {
     try {
       const tx = await Transaction.findById(req.params.id);
@@ -56,24 +50,20 @@ router.post(
 
       res.status(200).json({ message: '❌ Deposit rejected', transaction: tx });
     } catch (err) {
-      console.error('❌ Deposit rejection error:', err.message);
+      console.error(err.message);
       res.status(500).json({ error: 'Rejection failed' });
     }
   }
 );
 
-// 💸 Approve Bingo payout
+// Approve Bingo payout
 router.post(
   '/payout/:roundId',
   requireAdmin,
-  param('roundId').isString().withMessage('Invalid round ID'),
-  body('adminNote').optional().isString(),
   async (req, res) => {
     try {
       const round = await BingoRound.findOne({ roundId: req.params.roundId });
-      if (!round || !round.hasWon) {
-        return res.status(404).json({ error: 'Round not found or not won' });
-      }
+      if (!round || !round.hasWon) return res.status(404).json({ error: 'Round not found or not won' });
 
       round.isPaid = true;
       round.status = 'paid';
@@ -83,35 +73,35 @@ router.post(
 
       res.status(200).json({ message: '💰 Payout approved', round });
     } catch (err) {
-      console.error('❌ Payout approval error:', err.message);
+      console.error(err.message);
       res.status(500).json({ error: 'Payout approval failed' });
     }
   }
 );
 
-// 📊 View pending deposits
+// Pending deposits
 router.get('/pending-deposits', requireAdmin, async (req, res) => {
   try {
     const pendingTxs = await Transaction.find({ status: 'pending' }).sort({ createdAt: -1 });
     res.status(200).json({ transactions: pendingTxs });
   } catch (err) {
-    console.error('❌ Fetch pending deposits error:', err.message);
+    console.error(err.message);
     res.status(500).json({ error: 'Failed to fetch pending deposits' });
   }
 });
 
-// 📊 View unpaid Bingo wins
+// Pending payouts
 router.get('/pending-payouts', requireAdmin, async (req, res) => {
   try {
     const pendingRounds = await BingoRound.find({ hasWon: true, isPaid: false }).sort({ joinedAt: -1 });
     res.status(200).json({ rounds: pendingRounds });
   } catch (err) {
-    console.error('❌ Fetch pending payouts error:', err.message);
+    console.error(err.message);
     res.status(500).json({ error: 'Failed to fetch pending payouts' });
   }
 });
 
-// 📈 Game stats summary
+// Stats
 router.get('/stats', requireAdmin, async (req, res) => {
   try {
     const [depositAgg] = await Transaction.aggregate([
@@ -132,9 +122,9 @@ router.get('/stats', requireAdmin, async (req, res) => {
       activeUsers: activeUsers.length
     });
   } catch (err) {
-    console.error('❌ Stats fetch error:', err.message);
+    console.error(err.message);
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 
-export default router;
+module.exports = router;
