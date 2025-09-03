@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const playersRoute = require('./routes/players');
-const playRoute = require('./routes/playRoute');
+const playersRoute = require('./routes/playRoute');
 const healthRoute = require('./routes/health');
 require('dotenv').config();
 
@@ -13,7 +12,6 @@ app.use(express.json());
 
 // Routes
 app.use('/players', playersRoute);
-app.use('/play', playRoute);
 app.use('/health', healthRoute);
 
 // Root endpoint
@@ -28,10 +26,7 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 .then(() => {
   console.log('✅ Connected to MongoDB');
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
+  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 })
-.catch(err => {
-  console.error('❌ MongoDB connection error:', err);
-});
+.catch(err => console.error('❌ MongoDB connection error:', err));
+
