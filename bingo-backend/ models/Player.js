@@ -1,3 +1,4 @@
+// bingo-backend/models/Player.js
 const mongoose = require('mongoose');
 
 const playerSchema = new mongoose.Schema({
@@ -6,7 +7,7 @@ const playerSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  wallet: {
+  balance: {
     type: Number,
     default: 0
   },
@@ -16,7 +17,8 @@ const playerSchema = new mongoose.Schema({
   },
   language: {
     type: String,
-    default: 'am' // or 'en' depending on user preference
+    enum: ['am', 'en'],
+    default: 'am'
   },
   lastPlayed: {
     type: Date
