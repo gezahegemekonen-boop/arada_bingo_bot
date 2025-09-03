@@ -18,11 +18,7 @@ router.post(
 // Get all transactions
 router.get('/', transactionController.getAllTransactions);
 
-// Get transactions for a specific player
-router.get(
-  '/:id',
-  param('id').notEmpty().withMessage('playerId is required'),
-  transactionController.getPlayerTransactions
-);
+// Get transactions for specific player
+router.get('/:id', param('id').notEmpty().withMessage('playerId is required'), transactionController.getPlayerTransactions);
 
 module.exports = router;
