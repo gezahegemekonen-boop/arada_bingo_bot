@@ -3,12 +3,11 @@ const { body } = require('express-validator');
 const router = express.Router();
 const { playBingo } = require('../controllers/playController');
 
-// ✅ POST /api/play with validation
+// POST /play — play bingo
 router.post(
   '/play',
   [
-    body('userId').isString().notEmpty().withMessage('userId is required'),
-    // 🔥 Removed card validation — it's generated server-side
+    body('userId').isString().notEmpty().withMessage('userId is required')
   ],
   playBingo
 );
