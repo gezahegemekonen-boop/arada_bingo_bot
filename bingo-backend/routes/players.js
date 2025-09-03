@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, param } = require('express-validator');
 const router = express.Router();
-const playerController = require('../controllers/playerController');
+const playController = require('../controllers/playController');
 
 // GET /players — fetch all players
 router.get('/', playerController.getAllPlayers);
