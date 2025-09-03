@@ -1,8 +1,12 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Backend running', timestamp: new Date().toISOString() });
+  res.status(200).json({
+    status: 'ok',
+    message: 'Arada Bingo backend is running',
+    timestamp: new Date().toISOString()
+  });
 });
 
-module.exports = router;
+export default router;
