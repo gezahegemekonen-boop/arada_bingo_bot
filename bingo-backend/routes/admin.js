@@ -1,4 +1,5 @@
 import express from 'express';
+import { body, param } from 'express-validator';
 import Transaction from '../models/Transaction.js';
 import BingoRound from '../models/BingoRound.js';
 
@@ -14,76 +15,85 @@ const requireAdmin = (req, res, next) => {
 };
 
 // ✅ Approve deposit
-router.post('/approve/:id', requireAdmin, async (req, res) => {
-  const { id } = req.params;
-  const { adminNote } = req.body;
+router.post(
+  '/approve/:id',
+  requireAdmin,
+  param('id').isMongoId().withMessage('Invalid transaction ID'),
+  body('adminNote').optional().isString(),
+  async (req, res) => {
+    try {
+      const tx = await Transaction.findById(req.params.id);
+      if (!tx) return res.status(404).json({ error: 'Transaction not found' });
 
-  try {
-    const tx = await Transaction.findById(id);
-    if (!tx) return res.status(404).json({ error: 'Transaction not found' });
+      tx.status = 'approved';
+      tx.approvedAt = new Date();
+      tx.adminNote = req.body.adminNote || '';
+      await tx.save();
 
-    tx.status = 'approved';
-    tx.approvedAt = new Date();
-    tx.adminNote = adminNote || '';
-    await tx.save();
-
-    res.json({ message: '✅ Deposit approved', transaction: tx });
-  } catch (err) {
-    console.error('❌ Deposit approval error:', err.message);
-    res.status(500).json({ error: 'Approval failed' });
+      res.status(200).json({ message: '✅ Deposit approved', transaction: tx });
+    } catch (err) {
+      console.error('❌ Deposit approval error:', err.message);
+      res.status(500).json({ error: 'Approval failed' });
+    }
   }
-});
+);
 
 // ❌ Reject deposit
-router.post('/reject/:id', requireAdmin, async (req, res) => {
-  const { id } = req.params;
-  const { adminNote } = req.body;
+router.post(
+  '/reject/:id',
+  requireAdmin,
+  param('id').isMongoId().withMessage('Invalid transaction ID'),
+  body('adminNote').optional().isString(),
+  async (req, res) => {
+    try {
+      const tx = await Transaction.findById(req.params.id);
+      if (!tx) return res.status(404).json({ error: 'Transaction not found' });
 
-  try {
-    const tx = await Transaction.findById(id);
-    if (!tx) return res.status(404).json({ error: 'Transaction not found' });
+      tx.status = 'rejected';
+      tx.rejectedAt = new Date();
+      tx.adminNote = req.body.adminNote || '';
+      await tx.save();
 
-    tx.status = 'rejected';
-    tx.rejectedAt = new Date();
-    tx.adminNote = adminNote || '';
-    await tx.save();
-
-    res.json({ message: '❌ Deposit rejected', transaction: tx });
-  } catch (err) {
-    console.error('❌ Deposit rejection error:', err.message);
-    res.status(500).json({ error: 'Rejection failed' });
+      res.status(200).json({ message: '❌ Deposit rejected', transaction: tx });
+    } catch (err) {
+      console.error('❌ Deposit rejection error:', err.message);
+      res.status(500).json({ error: 'Rejection failed' });
+    }
   }
-});
+);
 
 // 💸 Approve Bingo payout
-router.post('/payout/:roundId', requireAdmin, async (req, res) => {
-  const { roundId } = req.params;
-  const { adminNote } = req.body;
+router.post(
+  '/payout/:roundId',
+  requireAdmin,
+  param('roundId').isString().withMessage('Invalid round ID'),
+  body('adminNote').optional().isString(),
+  async (req, res) => {
+    try {
+      const round = await BingoRound.findOne({ roundId: req.params.roundId });
+      if (!round || !round.hasWon) {
+        return res.status(404).json({ error: 'Round not found or not won' });
+      }
 
-  try {
-    const round = await BingoRound.findOne({ roundId });
-    if (!round || !round.hasWon) {
-      return res.status(404).json({ error: 'Round not found or not won' });
+      round.isPaid = true;
+      round.status = 'paid';
+      round.adminNote = req.body.adminNote || '';
+      round.paidAt = new Date();
+      await round.save();
+
+      res.status(200).json({ message: '💰 Payout approved', round });
+    } catch (err) {
+      console.error('❌ Payout approval error:', err.message);
+      res.status(500).json({ error: 'Payout approval failed' });
     }
-
-    round.isPaid = true;
-    round.status = 'paid';
-    round.adminNote = adminNote || '';
-    round.paidAt = new Date();
-    await round.save();
-
-    res.json({ message: '💰 Payout approved', round });
-  } catch (err) {
-    console.error('❌ Payout approval error:', err.message);
-    res.status(500).json({ error: 'Payout approval failed' });
   }
-});
+);
 
 // 📊 View pending deposits
 router.get('/pending-deposits', requireAdmin, async (req, res) => {
   try {
     const pendingTxs = await Transaction.find({ status: 'pending' }).sort({ createdAt: -1 });
-    res.json({ transactions: pendingTxs });
+    res.status(200).json({ transactions: pendingTxs });
   } catch (err) {
     console.error('❌ Fetch pending deposits error:', err.message);
     res.status(500).json({ error: 'Failed to fetch pending deposits' });
@@ -94,7 +104,7 @@ router.get('/pending-deposits', requireAdmin, async (req, res) => {
 router.get('/pending-payouts', requireAdmin, async (req, res) => {
   try {
     const pendingRounds = await BingoRound.find({ hasWon: true, isPaid: false }).sort({ joinedAt: -1 });
-    res.json({ rounds: pendingRounds });
+    res.status(200).json({ rounds: pendingRounds });
   } catch (err) {
     console.error('❌ Fetch pending payouts error:', err.message);
     res.status(500).json({ error: 'Failed to fetch pending payouts' });
@@ -104,21 +114,21 @@ router.get('/pending-payouts', requireAdmin, async (req, res) => {
 // 📈 Game stats summary
 router.get('/stats', requireAdmin, async (req, res) => {
   try {
-    const totalDeposits = await Transaction.aggregate([
+    const [depositAgg] = await Transaction.aggregate([
       { $match: { status: 'approved' } },
       { $group: { _id: null, sum: { $sum: '$amount' } } }
     ]);
 
-    const totalPayouts = await BingoRound.aggregate([
+    const [payoutAgg] = await BingoRound.aggregate([
       { $match: { isPaid: true } },
       { $group: { _id: null, sum: { $sum: '$payoutAmount' } } }
     ]);
 
     const activeUsers = await BingoRound.distinct('userId');
 
-    res.json({
-      totalDeposits: totalDeposits[0]?.sum || 0,
-      totalPayouts: totalPayouts[0]?.sum || 0,
+    res.status(200).json({
+      totalDeposits: depositAgg?.sum || 0,
+      totalPayouts: payoutAgg?.sum || 0,
       activeUsers: activeUsers.length
     });
   } catch (err) {
