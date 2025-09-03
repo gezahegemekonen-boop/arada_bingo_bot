@@ -1,3 +1,4 @@
+// bingo-backend/controllers/playController.js
 import Player from '../models/Player.js';
 import Round from '../models/BingoRound.js';
 import generateCard from '../helpers/generateCard.js';
@@ -7,7 +8,7 @@ export const getAllPlayers = async (req, res) => {
     const players = await Player.find();
     res.status(200).json(players);
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching players:', err);
     res.status(500).json({ message: 'Server error while fetching players' });
   }
 };
@@ -22,7 +23,7 @@ export const getPlayer = async (req, res) => {
 
     res.status(200).json(player);
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching player:', err);
     res.status(500).json({ message: 'Server error while fetching player' });
   }
 };
@@ -52,7 +53,7 @@ export const updatePlayer = async (req, res) => {
     await player.save();
     res.status(200).json(player);
   } catch (err) {
-    console.error(err);
+    console.error('Error updating player:', err);
     res.status(500).json({ message: 'Server error while updating player' });
   }
 };
@@ -66,6 +67,7 @@ export const playBingo = async (req, res) => {
     if (player.coins < 1) return res.status(400).json({ message: 'Not enough coins to play' });
 
     player.coins -= 1;
+    player.lastPlayed = new Date();
     await player.save();
 
     const card = generateCard();
@@ -88,7 +90,7 @@ export const playBingo = async (req, res) => {
       coinsLeft: player.coins
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error during Bingo play:', err);
     res.status(500).json({ message: 'Server error while playing Bingo' });
   }
 };
