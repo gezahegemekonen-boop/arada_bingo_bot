@@ -1,10 +1,28 @@
-const express = require('express');
+import express from 'express';
+import { body, param } from 'express-validator';
+import transactionController from '../controllers/transactionController.js';
+
 const router = express.Router();
-const transactionController = require('../controllers/transactionController');
 
+// 🟢 Submit a deposit
+router.post(
+  '/deposit',
+  [
+    body('playerId').notEmpty().withMessage('playerId is required'),
+    body('amount').isNumeric().withMessage('Amount must be a number'),
+    body('method').optional().isString()
+  ],
+  transactionController.submitDeposit
+);
+
+// 📄 Get all transactions (optional, for admin or debugging)
 router.get('/', transactionController.getAllTransactions);
-router.get('/:id', transactionController.getPlayerTransactions);
-router.put('/approve/:id', transactionController.approveTransaction);
-router.put('/reject/:id', transactionController.rejectTransaction);
 
-module.exports = router;
+// 📄 Get transactions for a specific player
+router.get(
+  '/:id',
+  param('id').notEmpty().withMessage('playerId is required'),
+  transactionController.getPlayerTransactions
+);
+
+export default router;
