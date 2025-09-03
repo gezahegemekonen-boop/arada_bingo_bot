@@ -1,5 +1,5 @@
 const Player = require('../models/Player');
-const Round = require('../models/Round'); // Make sure this model exists
+const Round = require('../models/BingoRound'); // ✅ fixed import
 const generateCard = require('../helpers/generateCard');
 
 // ✅ Get all players
@@ -86,15 +86,18 @@ exports.playBingo = async (req, res) => {
 
     // Save round
     const round = await Round.create({
-      telegramId: userId,
+      userId,
+      roundId: Date.now().toString(),
       card,
-      result: isWin ? 'win' : 'lose',
-      timestamp: new Date()
+      hasWon: isWin,
+      stake: 1,
+      payoutAmount: isWin ? 2 : 0,
+      status: isWin ? 'won' : 'pending'
     });
 
     res.status(200).json({
       success: true,
-      result: round.result,
+      result: isWin ? 'win' : 'lose',
       card,
       coinsLeft: player.coins
     });
