@@ -1,6 +1,7 @@
-const express = require('express');
-const { body } = require('express-validator');
-const { playBingo } = require('../controllers/playController');
+import express from 'express';
+import { body } from 'express-validator';
+import { playBingo } from '../controllers/playController.js';
+
 const router = express.Router();
 
 router.post(
@@ -9,4 +10,4 @@ router.post(
   playBingo
 );
 
-module.exports = router;
+export default router;
