@@ -1,10 +1,10 @@
-import express from 'express';
-import { body, param } from 'express-validator';
-import transactionController from '../controllers/transactionController.js';
+const express = require('express');
+const { body, param } = require('express-validator');
+const transactionController = require('../controllers/transactionController');
 
 const router = express.Router();
 
-// 🟢 Submit a deposit
+// Submit deposit
 router.post(
   '/deposit',
   [
@@ -15,14 +15,14 @@ router.post(
   transactionController.submitDeposit
 );
 
-// 📄 Get all transactions (optional, for admin or debugging)
+// Get all transactions
 router.get('/', transactionController.getAllTransactions);
 
-// 📄 Get transactions for a specific player
+// Get transactions for a specific player
 router.get(
   '/:id',
   param('id').notEmpty().withMessage('playerId is required'),
   transactionController.getPlayerTransactions
 );
 
-export default router;
+module.exports = router;
