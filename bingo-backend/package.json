@@ -1,7 +1,6 @@
 {
   "name": "arada-bingo-backend",
   "version": "1.0.0",
-  "description": "Backend for Arada Bingo Telegram Bot",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -19,7 +18,5 @@
   },
   "engines": {
     "node": ">=22.0.0"
-  },
-  "author": "Mekonen",
-  "license": "MIT"
+  }
 }
