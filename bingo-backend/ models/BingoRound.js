@@ -19,4 +19,5 @@ const bingoRoundSchema = new mongoose.Schema({
 
 bingoRoundSchema.index({ userId: 1, roundId: 1 }, { unique: true });
 
-module.exports = mongoose.model('BingoRound', bingoRoundSchema);
+const BingoRound = mongoose.model('BingoRound', bingoRoundSchema);
+module.exports = BingoRound;
