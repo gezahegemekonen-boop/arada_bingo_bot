@@ -1,35 +1,13 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const gameResultSchema = new mongoose.Schema({
-  userId: {
-    type: String,
-    required: true
-  },
-  stake: {
-    type: Number,
-    required: true
-  },
-  card: {
-    type: [[mongoose.Schema.Types.Mixed]], // 2D array of numbers + 'FREE'
-    required: true
-  },
-  calledNumbers: {
-    type: [Number],
-    required: true
-  },
-  won: {
-    type: Boolean,
-    required: true
-  },
-  winType: {
-    type: String,
-    enum: ['row', 'column', 'diagonal', 'corners', null],
-    default: null
-  },
-  timestamp: {
-    type: Date,
-    default: Date.now
-  }
+  userId: { type: String, required: true },
+  stake: { type: Number, required: true },
+  card: { type: [[mongoose.Schema.Types.Mixed]], required: true },
+  calledNumbers: { type: [Number], required: true },
+  won: { type: Boolean, required: true },
+  winType: { type: String, enum: ['row', 'column', 'diagonal', 'corners', null], default: null },
+  timestamp: { type: Date, default: Date.now }
 });
 
-export default mongoose.model('GameResult', gameResultSchema);
+module.exports = mongoose.model('GameResult', gameResultSchema);
