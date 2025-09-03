@@ -1,27 +1,16 @@
 const express = require('express');
 const { body, param } = require('express-validator');
+const { getAllPlayers, getPlayer, updatePlayer } = require('../controllers/playController');
+
 const router = express.Router();
-const playController = require('../controllers/playController');
 
-// GET /players — fetch all players
-router.get('/', playerController.getAllPlayers);
+// GET all players
+router.get('/', getAllPlayers);
 
-// GET /players/:id — fetch one player by telegramId
-router.get(
-  '/:id',
-  param('id').notEmpty().withMessage('telegramId is required'),
-  playerController.getPlayer
-);
+// GET single player by telegramId
+router.get('/:id', param('id').notEmpty().withMessage('telegramId required'), getPlayer);
 
-// PUT /players/:id — update wallet or coins
-router.put(
-  '/:id',
-  [
-    param('id').notEmpty().withMessage('telegramId is required'),
-    body('wallet').optional().isNumeric().withMessage('wallet must be a number'),
-    body('coins').optional().isNumeric().withMessage('coins must be a number')
-  ],
-  playerController.updatePlayer
-);
+// PATCH update player
+router.patch('/:id', updatePlayer);
 
 module.exports = router;
