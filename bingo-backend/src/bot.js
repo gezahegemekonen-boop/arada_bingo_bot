@@ -4,41 +4,38 @@ const mongoose = require('mongoose');
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
-// Connect to MongoDB
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 }).then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB error:', err));
 
-// Player commands
-require('./commands/player/start')(bot);
-require('./commands/player/instruction')(bot);
-require('./commands/player/deposit')(bot);
-require('./commands/player/withdraw')(bot);
-require('./commands/player/play')(bot);
-require('./commands/player/balance')(bot);
-require('./commands/player/transaction')(bot);
-require('./commands/player/language')(bot);
-require('./commands/player/invite')(bot);
-require('./commands/player/referrals')(bot);
-require('./commands/player/leaderboard')(bot);
-require('./commands/player/bonus')(bot);
-require('./commands/player/demo')(bot);
+// Load Player commands
+const playerCommands = [
+  'start','instruction','deposit','convert','play','balance',
+  'withdraw','transaction','language','invite','referrals',
+  'leaderboard','bonus','demo'
+];
 
-// Admin commands
-require('./commands/admin/approve')(bot);
-require('./commands/admin/reject')(bot);
-require('./commands/admin/pending')(bot);
+playerCommands.forEach(cmd => require(`./commands/player/${cmd}`)(bot));
+
+// Load Admin commands
+const adminCommands = ['approve','reject','pending'];
+adminCommands.forEach(cmd => require(`./commands/admin/${cmd}`)(bot));
 
 // Health check
-bot.onText(/\/health/, (msg) => bot.sendMessage(msg.chat.id, '✅ Bot is alive.'));
+bot.onText(/\/health/, (msg) => {
+  bot.sendMessage(msg.chat.id, '✅ Bot is alive and running.');
+});
 
-// Fallback
+// Fallback for unknown messages
 bot.on('message', (msg) => {
   if (!msg.text.startsWith('/')) {
-    bot.sendMessage(msg.chat.id, '🤖 Use a command like /play or /deposit to start.');
+    bot.sendMessage(msg.chat.id, '🤖 Please use a command like /instruction or /play to get started.');
   }
 });
 
-console.log('✅ Telegram Bingo bot is running');
+console.log('✅ Telegram Bingo bot is live and polling for commands');
+
+module.exports = bot;
