@@ -1,10 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const playRoute = require('./routes/playRoute');
+const adminRoute = require('./routes/admin'); // ✅ Add this line
 
 const app = express();
 app.use(express.json());
+
 app.use('/api', playRoute);
+app.use('/admin', adminRoute); // ✅ Mount admin routes
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
