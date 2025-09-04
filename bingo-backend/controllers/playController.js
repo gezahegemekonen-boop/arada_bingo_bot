@@ -1,6 +1,6 @@
 // bingo-backend/controllers/playController.js
 import Player from '../../models/Player.js'; // ✅ correct
-import Round from '../models/BingoRound.js';
+import Round from '../../models/BingoRound.js';
 import generateCard from '../helpers/generateCard.js';
 
 export const getAllPlayers = async (req, res) => {
