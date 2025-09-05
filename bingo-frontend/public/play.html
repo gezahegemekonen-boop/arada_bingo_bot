@@ -68,6 +68,12 @@
   <div id="result" class="result" style="display:none;"></div>
 
   <script>
+    function playAmharicAudio(type) {
+      const audio = new Audio();
+      audio.src = type === 'win' ? 'assets/sounds/win.mp3' : 'assets/sounds/lose.mp3';
+      audio.play();
+    }
+
     async function playBingo() {
       const userId = document.getElementById('telegramId').value.trim();
       if (!userId) return alert('Please enter your Telegram ID');
@@ -84,6 +90,7 @@
 
       if (!data.success) {
         resultDiv.innerHTML = `<p class="lose">❌ ${data.message}</p>`;
+        playAmharicAudio('lose');
         return;
       }
 
@@ -98,6 +105,12 @@
         <p>Coins left: ${data.coinsLeft}</p>
         <div class="card">${cardHTML}</div>
       `;
+
+      if (data.result === 'win') {
+        playAmharicAudio('win');
+      } else {
+        playAmharicAudio('lose');
+      }
     }
   </script>
 </body>
