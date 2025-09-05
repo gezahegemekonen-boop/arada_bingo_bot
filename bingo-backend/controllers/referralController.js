@@ -31,15 +31,19 @@ export const updateReferralStats = async (req, res) => {
   try {
     const inviter = await Player.findOne({ referralCode });
 
-    if (!inviter || inviter.referrals.includes(newUserId)) {
-      return res.status(200).json({ success: false, message: 'Already referred or invalid code' });
+    if (!inviter) {
+      return res.status(404).json({ success: false, message: 'Referral code not found' });
+    }
+
+    if (inviter.referrals.includes(newUserId)) {
+      return res.status(200).json({ success: false, message: 'User already referred' });
     }
 
     inviter.referrals.push(newUserId);
     inviter.referralCoins += 2; // reward amount
     await inviter.save();
 
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, message: 'Referral recorded and coins rewarded' });
   } catch (err) {
     console.error('Referral update error:', err);
     res.status(500).json({ success: false, message: 'Server error while updating referral stats' });
