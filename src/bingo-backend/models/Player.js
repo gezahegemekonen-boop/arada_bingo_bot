@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+iimport mongoose from 'mongoose';
 
 const PlayerSchema = new mongoose.Schema({
   telegramId: { type: String, required: true, unique: true, index: true },
