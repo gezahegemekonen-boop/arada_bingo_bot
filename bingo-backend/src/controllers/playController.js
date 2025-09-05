@@ -1,7 +1,7 @@
 
-import Player from '../models/Player.js'; // ✅ correct path
-import BingoRound from '../models/BingoRound.js'; // ✅ fixed path
-import generateCard from '../helpers/generateCard.js'; // ✅ ES module default export
+import Player from '../models/Player.js';
+import BingoRound from '../models/BingoRound.js';
+import generateCard from '../helpers/generateCard.js';
 
 export const getAllPlayers = async (req, res) => {
   try {
