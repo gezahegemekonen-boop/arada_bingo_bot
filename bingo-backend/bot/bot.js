@@ -8,11 +8,24 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 const ADMIN_ID = process.env.ADMIN_ID;
 const BACKEND_URL = process.env.BACKEND_URL;
 
-// ✅ /start — initialize wallet
-bot.onText(/\/start/, async (msg) => {
+// ✅ /start — initialize wallet and track referral
+bot.onText(/\/start(?:\s+(\S+))?/, async (msg, match) => {
   const chatId = msg.chat.id.toString();
+  const referralCode = match[1]; // may be undefined
+
   try {
+    // Create or update player
     await fetch(`${BACKEND_URL}/players/${chatId}`, { method: 'PUT' });
+
+    // If referral code is present and not self-referral
+    if (referralCode && referralCode !== chatId) {
+      await fetch(`${BACKEND_URL}/referral/${referralCode}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newUserId: chatId })
+      });
+    }
+
     bot.sendMessage(chatId, '🎉 Welcome to Arada Bingo! Your wallet is ready.');
   } catch (err) {
     console.error('Start error:', err.message);
