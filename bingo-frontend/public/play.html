@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Play Arada Bingo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background-color: #00ffcc;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #2e2e3f;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #00ffcc;
+    }
+    .card {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .cell {
+      background: #444;
+      padding: 10px;
+      text-align: center;
+      border-radius: 4px;
+    }
+    .win {
+      color: #00ffcc;
+    }
+    .lose {
+      color: #ff4444;
+    }
+    a {
+      color: #00ffcc;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎮 Play Arada Bingo</h1>
+  <a href="index.html">← Back to Home</a>
+  <p>Enter your Telegram ID to play:</p>
+  <input type="text" id="telegramId" placeholder="e.g. 123456789" />
+  <button onclick="playBingo()">Play Bingo</button>
+
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script>
+    async function playBingo() {
+      const userId = document.getElementById('telegramId').value.trim();
+      if (!userId) return alert('Please enter your Telegram ID');
+
+      const res = await fetch('https://bingo-backend-vdeo.onrender.com/playBingo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+
+      const data = await res.json();
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+
+      if (!data.success) {
+        resultDiv.innerHTML = `<p class="lose">❌ ${data.message}</p>`;
+        return;
+      }
+
+      const cardHTML = data.card.map(row => 
+        row.map(num => `<div class="cell">${num}</div>`).join('')
+      ).join('');
+
+      resultDiv.innerHTML = `
+        <p class="${data.result === 'win' ? 'win' : 'lose'}">
+          ${data.result === 'win' ? '🎉 You won!' : '😢 You lost.'}
+        </p>
+        <p>Coins left: ${data.coinsLeft}</p>
+        <div class="card">${cardHTML}</div>
+      `;
+    }
+  </script>
+</body>
+</html>
