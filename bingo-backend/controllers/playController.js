@@ -1,7 +1,6 @@
-// bingo-backend/controllers/playController.js
-import Player from '../../models/Player.js'; // ✅ correct
-import BingoRound from '../src/models/BingoRound.js'
-import generateCard from '../helpers/generateCard.js';
+import Player from '../models/Player.js'; // ✅ correct path
+import BingoRound from '../models/BingoRound.js'; // ✅ fixed path
+import generateCard from '../helpers/generateCard.js'; // ✅ ES module default export
 
 export const getAllPlayers = async (req, res) => {
   try {
@@ -73,7 +72,7 @@ export const playBingo = async (req, res) => {
     const card = generateCard();
     const isWin = Math.random() < 0.5;
 
-    const round = await Round.create({
+    const round = await BingoRound.create({
       userId,
       roundId: Date.now().toString(),
       card,
