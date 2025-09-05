@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      color: #ffcc00;
+    }
+    .transaction {
+      background: #2e2e3f;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px #ffcc00;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .approve {
+      background-color: #00ffcc;
+      color: #000;
+    }
+    .reject {
+      background-color: #ff4444;
+      color: #fff;
+    }
+    a {
+      color: #ffcc00;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛡️ Admin Dashboard</h1>
+  <a href="index.html">← Back to Home</a>
+  <div id="transactions">Loading pending payouts...</div>
+
+  <script>
+    async function loadPending() {
+      const res = await fetch('https://bingo-backend-vdeo.onrender.com/admin/pending');
+      const data = await res.json();
+      const container = document.getElementById('transactions');
+      container.innerHTML = '';
+
+      if (!data.success || !data.rounds) {
+        container.textContent = 'No pending transactions found.';
+        return;
+      }
+
+      data.rounds.forEach(tx => {
+        const div = document.createElement('div');
+        div.className = 'transaction';
+        div.innerHTML = `
+          <strong>Round ID:</strong> ${tx.roundId}<br>
+          <strong>User:</strong> ${tx.userId}<br>
+          <strong>Amount:</strong> ${tx.payoutAmount}<br>
+          <button class="approve" onclick="approve('${tx.roundId}')">✅ Approve</button>
+          <button class="reject" onclick="reject('${tx.roundId}')">❌ Reject</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function approve(id) {
+      await fetch(`https://bingo-backend-vdeo.onrender.com/admin/approve/${id}`, { method: 'POST' });
+      loadPending();
+    }
+
+    async function reject(id) {
+      await fetch(`https://bingo-backend-vdeo.onrender.com/admin/reject/${id}`, { method: 'POST' });
+      loadPending();
+    }
+
+    loadPending();
+  </script>
+</body>
+</html>
