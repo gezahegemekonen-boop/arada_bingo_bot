@@ -1,4 +1,4 @@
-import Player from '../models/Player.js';
+import Player from '../../models/Player.js';
 
 // GET /referral/:telegramId — show referral stats
 export const getReferralStats = async (req, res) => {
