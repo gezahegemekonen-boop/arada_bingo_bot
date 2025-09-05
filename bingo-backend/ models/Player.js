@@ -1,16 +1,18 @@
 import mongoose from 'mongoose';
 
-const playerSchema = new mongoose.Schema({
-  telegramId: { type: String, required: true, unique: true },
+const PlayerSchema = new mongoose.Schema({
+  telegramId: { type: String, index: true, required: true, unique: true },
+  username: String,
   balance: { type: Number, default: 0 },
-  coins: { type: Number, default: 0 },
-  language: { type: String, enum: ['am', 'en'], default: 'am' },
-  lastPlayed: { type: Date },
-  isAdmin: { type: Boolean, default: false },
+  language: { type: String, enum: ['en', 'am'], default: 'en' },
+  banned: { type: Boolean, default: false },
+  wins: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+
+  // ✅ Referral system fields
   referralCode: { type: String },
   referrals: [{ type: String }],
   referralCoins: { type: Number, default: 0 }
-}, { timestamps: true });
+});
 
-const Player = mongoose.model('Player', playerSchema);
-export default Player;
+export default mongoose.model('Player', PlayerSchema);
