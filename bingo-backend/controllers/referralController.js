@@ -1,5 +1,6 @@
 import Player from '../models/Player.js';
 
+// GET /referral/:telegramId — show referral stats
 export const getReferralStats = async (req, res) => {
   const { telegramId } = req.params;
 
@@ -19,5 +20,28 @@ export const getReferralStats = async (req, res) => {
   } catch (err) {
     console.error('Error fetching referral stats:', err);
     res.status(500).json({ success: false, message: 'Server error while fetching referral stats' });
+  }
+};
+
+// POST /referral/:referralCode — update inviter stats
+export const updateReferralStats = async (req, res) => {
+  const { referralCode } = req.params;
+  const { newUserId } = req.body;
+
+  try {
+    const inviter = await Player.findOne({ referralCode });
+
+    if (!inviter || inviter.referrals.includes(newUserId)) {
+      return res.status(200).json({ success: false, message: 'Already referred or invalid code' });
+    }
+
+    inviter.referrals.push(newUserId);
+    inviter.referralCoins += 2; // reward amount
+    await inviter.save();
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Referral update error:', err);
+    res.status(500).json({ success: false, message: 'Server error while updating referral stats' });
   }
 };
