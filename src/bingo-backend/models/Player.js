@@ -11,8 +11,6 @@ const PlayerSchema = new mongoose.Schema({
   banned: { type: Boolean, default: false },
   wins: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
-
-  // ✅ Referral system fields
   referralCode: { type: String },
   referrals: [{ type: String }],
   referralCoins: { type: Number, default: 0 }
