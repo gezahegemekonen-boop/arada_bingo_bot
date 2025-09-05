@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Referral Program</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      color: #ffcc00;
+    }
+    input {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #00ffcc;
+      color: #121212;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .stats {
+      margin-top: 20px;
+      background: #2e2e3f;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ffcc00;
+    }
+    a {
+      color: #ffcc00;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📢 Referral Program</h1>
+  <a href="index.html">← Back to Home</a>
+
+  <p>Enter your Telegram ID to get your referral link:</p>
+  <input type="text" id="telegramId" placeholder="e.g. 123456789" />
+  <button onclick="loadReferral()">Generate Link</button>
+
+  <div class="stats" id="referralStats" style="display:none;"></div>
+
+  <script>
+    async function loadReferral() {
+      const id = document.getElementById('telegramId').value.trim();
+      if (!id) return alert('Please enter your Telegram ID');
+
+      const res = await fetch(`https://bingo-backend-vdeo.onrender.com/referral/${id}`);
+      const data = await res.json();
+
+      const stats = document.getElementById('referralStats');
+      stats.style.display = 'block';
+
+      if (!data.success) {
+        stats.innerHTML = `<p>❌ ${data.message}</p>`;
+        return;
+      }
+
+      const link = `https://t.me/arada_bingo_bot?start=${data.referralCode}`;
+      stats.innerHTML = `
+        <p><strong>Your Referral Code:</strong> ${data.referralCode}</p>
+        <p><strongReferral Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
+        <p><strong>Friends Joined:</strong> ${data.referrals}</p>
+        <p><strong>Coins Earned:</strong> ${data.coinsEarned}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
