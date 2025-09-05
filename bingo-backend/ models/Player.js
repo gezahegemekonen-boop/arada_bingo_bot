@@ -4,7 +4,7 @@ const playerSchema = new mongoose.Schema({
   telegramId: { type: String, required: true, unique: true },
   balance: { type: Number, default: 0 },
   coins: { type: Number, default: 0 },
-  language: { type: String, enum: ['am','en'], default: 'am' },
+  language: { type: String, enum: ['am', 'en'], default: 'am' },
   lastPlayed: { type: Date },
   isAdmin: { type: Boolean, default: false },
 
@@ -14,4 +14,6 @@ const playerSchema = new mongoose.Schema({
   referralCoins: { type: Number, default: 0 } // coins earned from referrals
 }, { timestamps: true });
 
-export default mongoose.model('Player', playerSchema);
+// ✅ ES Module-compatible export
+const Player = mongoose.model('Player', playerSchema);
+export default Player;
