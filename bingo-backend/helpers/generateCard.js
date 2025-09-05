@@ -1,5 +1,7 @@
+// bingo-backend/helpers/generateCard.js
 // Simple 5x5 Bingo card generator
-module.exports = function generateCard() {
+
+function generateCard() {
   const card = [];
   for (let i = 0; i < 5; i++) {
     const row = [];
@@ -11,4 +13,6 @@ module.exports = function generateCard() {
   // Optional: set middle cell as FREE
   card[2][2] = 'FREE';
   return card;
-};
+}
+
+export default generateCard;
