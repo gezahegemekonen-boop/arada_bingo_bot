@@ -1,12 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Beteseb Bingo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Arada Bingo Players</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e2f;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    .player-card {
+      background: #2e2e3f;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 0 5px #00ffcc;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Arada Bingo Players</h1>
+  <div id="status">Loading players...</div>
+  <div id="players"></div>
 
+  <script>
+    async function loadPlayers() {
+      try {
+        const res = await fetch('https://bingo-backend-vdeo.onrender.com/players');
+        const data = await res.json();
+
+        const status = document.getElementById('status');
+        const container = document.getElementById('players');
+        container.innerHTML = '';
+
+        if (!data.success) {
+          status.textContent = 'Failed to load players.';
+          return;
+        }
+
+        status.textContent = `Found ${data.count} players`;
+
+        data.players.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'player-card';
+          card.innerHTML = `
+            <strong>ID:</strong> ${p.telegramId}<br>
+            <strong>Coins:</strong> ${p.coins}<br>
+            <strong>Balance:</strong> ${p.balance}
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error loading players';
+        console.error(err);
+      }
+    }
+
+    loadPlayers();
+  </script>
+</body>
+</html>
