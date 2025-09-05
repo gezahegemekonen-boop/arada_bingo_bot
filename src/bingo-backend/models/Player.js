@@ -13,11 +13,10 @@ const PlayerSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 
   // ✅ Referral system fields
-  referralCode: { type: String },           // e.g. same as telegramId
-  referrals: [{ type: String }],            // array of telegramIds invited
-  referralCoins: { type: Number, default: 0 } // coins earned from referrals
+  referralCode: { type: String },
+  referrals: [{ type: String }],
+  referralCoins: { type: Number, default: 0 }
 });
 
 const Player = mongoose.model('Player', PlayerSchema);
 export default Player;
-
