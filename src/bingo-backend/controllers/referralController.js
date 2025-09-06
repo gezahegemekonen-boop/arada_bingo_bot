@@ -23,7 +23,7 @@ export const getReferralStats = async (req, res) => {
   }
 };
 
-// POST /referral/:referralCode — update inviter stats
+// POST /referral/:referralCode — triggered when a user joins via referral
 export const updateReferralStats = async (req, res) => {
   const { referralCode } = req.params;
   const { newUserId } = req.body;
