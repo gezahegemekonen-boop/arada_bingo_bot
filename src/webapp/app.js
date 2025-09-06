@@ -55,6 +55,32 @@ document.getElementById('claimBtn').onclick = () => {
   });
 };
 
+// ✅ Deposit
+document.getElementById('depositBtn').onclick = () => {
+  const amount = parseInt(prompt('💳 Enter deposit amount (min 30 Br):'));
+  if (isNaN(amount) || amount < 30) return alert('Invalid amount');
+
+  const method = prompt('Choose method: CBE, CBE_BIRR, TELEBIRR').toUpperCase();
+  if (!['CBE', 'CBE_BIRR', 'TELEBIRR'].includes(method)) return alert('Invalid method');
+
+  const txId = prompt('Enter transaction ID or reference number:');
+  if (!txId) return alert('Transaction ID required');
+
+  fetch('https://bingo-backend-vdeo.onrender.com/deposit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ telegramId: userId, amount, method, txId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert(`✅ Deposit successful!\nNew coin balance: ${data.coins}`);
+    } else {
+      alert(`❌ ${data.message}`);
+    }
+  });
+};
+
 // ✅ Invite Friends
 document.getElementById('inviteBtn').onclick = () => {
   tg.openTelegramLink(`https://t.me/your_bot_username?start=${userId}`);
