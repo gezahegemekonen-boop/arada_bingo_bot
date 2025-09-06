@@ -7,14 +7,15 @@ import { fileURLToPath } from 'url';
 import playersRoute from './routes/players.js';
 import healthRoute from './routes/health.js';
 import referralRoute from './routes/referral.js';
-import depositRoute from './routes/deposit.js'; // ✅ NEW
+import depositRoute from './routes/deposit.js';   // ✅ NEW
+import adminRoute from './routes/admin.js';       // ✅ NEW
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Resolve __dirname for ES modules
+// ✅ Resolve __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -28,7 +29,8 @@ app.use(express.json());
 app.use('/players', playersRoute);
 app.use('/health', healthRoute);
 app.use('/referral', referralRoute);
-app.use('/deposit', depositRoute); // ✅ NEW
+app.use('/deposit', depositRoute);   // ✅ NEW
+app.use('/admin', adminRoute);       // ✅ NEW
 
 // ✅ Root endpoint
 app.get('/', (req, res) => {
