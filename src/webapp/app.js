@@ -55,7 +55,7 @@ document.getElementById('claimBtn').onclick = () => {
   });
 };
 
-// ✅ Deposit
+// ✅ Deposit Confirmation
 document.getElementById('depositBtn').onclick = () => {
   const amount = parseInt(prompt('💳 Enter deposit amount (min 30 Br):'));
   if (isNaN(amount) || amount < 30) return alert('Invalid amount');
@@ -182,4 +182,43 @@ fetch('https://bingo-backend-vdeo.onrender.com/admin/deposits')
       if (data.deposits.length === 0) {
         list.innerHTML = '<li>No deposit confirmations found.</li>';
       } else {
-        data.deposits.forEach((deposit, index)
+        data.deposits.forEach((deposit, index) => {
+          const li = document.createElement('li');
+          const date = new Date(deposit.submittedAt).toLocaleString();
+          li.innerHTML = `
+            ${index + 1}. <b>${deposit.username || deposit.telegramId}</b> — 💳 ${deposit.amount} Br via ${deposit.method}
+            <br>📄 Code: ${deposit.txId} — <i>${deposit.status.toUpperCase()}</i> on ${date}
+            ${deposit.status === 'pending' ? `
+              <button onclick="approveDeposit('${deposit._id}')">✅ Approve</button>
+              <button onclick="rejectDeposit('${deposit._id}')">❌ Reject</button>
+            ` : ''}
+          `;
+          list.appendChild(li);
+        });
+      }
+    } else {
+      document.getElementById('adminDeposits').innerText = 'Could not load deposit confirmations.';
+    }
+  });
+
+window.approveDeposit = (id) => {
+  fetch(`https://bingo-backend-vdeo.onrender.com/admin/approve-deposit/${id}`, {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    location.reload();
+  });
+};
+
+window.rejectDeposit = (id) => {
+  fetch(`https://bingo-backend-vdeo.onrender.com/admin/reject-deposit/${id}`, {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    location.reload();
+  });
+};
