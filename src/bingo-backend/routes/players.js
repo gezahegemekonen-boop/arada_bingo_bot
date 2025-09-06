@@ -1,5 +1,6 @@
 import express from 'express';
 import Player from '../models/Player.js';
+import Payout from '../models/Payout.js';
 
 const router = express.Router();
 
@@ -49,6 +50,33 @@ router.get('/leaderboard', async (req, res) => {
   } catch (err) {
     console.error('Leaderboard error:', err);
     res.status(500).json({ success: false, message: 'Server error while fetching leaderboard' });
+  }
+});
+
+// ✅ Claim reward / request payout
+router.post('/:telegramId/payout', async (req, res) => {
+  const { telegramId } = req.params;
+
+  try {
+    const player = await Player.findOne({ telegramId });
+    if (!player || player.coins < 10) {
+      return res.status(400).json({ success: false, message: 'Not enough coins to claim payout' });
+    }
+
+    const payout = new Payout({
+      telegramId,
+      username: player.username,
+      amount: player.coins
+    });
+
+    player.coins = 0;
+    await player.save();
+    await payout.save();
+
+    res.status(200).json({ success: true, message: 'Payout request submitted', payoutId: payout._id });
+  } catch (err) {
+    console.error('Payout error:', err);
+    res.status(500).json({ success: false, message: 'Server error during payout request' });
   }
 });
 
