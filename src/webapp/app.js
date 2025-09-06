@@ -122,3 +122,55 @@ fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/payouts`)
       document.getElementById('payoutHistory').innerText = 'Could not load payout history.';
     }
   });
+
+// ✅ Admin Panel — View and manage payouts
+fetch('https://bingo-backend-vdeo.onrender.com/admin/payouts')
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      const list = document.getElementById('adminPayouts');
+      if (data.payouts.length === 0) {
+        list.innerHTML = '<li>No payout requests found.</li>';
+      } else {
+        data.payouts.forEach((payout, index) => {
+          const li = document.createElement('li');
+          const date = new Date(payout.requestedAt).toLocaleString();
+          li.innerHTML = `
+            ${index + 1}. <b>${payout.username || payout.telegramId}</b> — 💰 ${payout.amount} Br — 
+            <i>${payout.status.toUpperCase()}</i> on ${date}
+            ${payout.status === 'pending' ? `
+              <button onclick="approvePayout('${payout._id}')">✅ Approve</button>
+              <button onclick="rejectPayout('${payout._id}')">❌ Reject</button>
+            ` : ''}
+          `;
+          list.appendChild(li);
+        });
+      }
+    } else {
+      document.getElementById('adminPayouts').innerText = 'Could not load admin payouts.';
+    }
+  });
+
+// ✅ Approve payout
+window.approvePayout = (id) => {
+  fetch(`https://bingo-backend-vdeo.onrender.com/admin/approve/${id}`, {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    location.reload();
+  });
+};
+
+// ✅ Reject payout
+window.rejectPayout = (id) => {
+  fetch(`https://bingo-backend-vdeo.onrender.com/admin/reject/${id}`, {
+    method: 'POST'
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    location.reload();
+  });
+};
