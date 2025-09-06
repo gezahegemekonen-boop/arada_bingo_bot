@@ -6,7 +6,7 @@ const username = tg.initDataUnsafe?.user?.username;
 
 document.getElementById('welcome').innerText = `👋 Welcome, ${username || 'Player'}!`;
 
-// Fetch referral stats
+// ✅ Fetch referral stats
 fetch(`https://bingo-backend-vdeo.onrender.com/referral/${userId}`)
   .then(res => res.json())
   .then(data => {
@@ -18,7 +18,7 @@ fetch(`https://bingo-backend-vdeo.onrender.com/referral/${userId}`)
     }
   });
 
-// Play Bingo
+// ✅ Play Bingo
 document.getElementById('playBtn').onclick = () => {
   fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/play`, {
     method: 'POST',
@@ -35,7 +35,23 @@ document.getElementById('playBtn').onclick = () => {
   });
 };
 
-// Invite Friends
+// ✅ Invite Friends
 document.getElementById('inviteBtn').onclick = () => {
   tg.openTelegramLink(`https://t.me/your_bot_username?start=${userId}`);
 };
+
+// ✅ Fetch leaderboard
+fetch('https://bingo-backend-vdeo.onrender.com/players/leaderboard')
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      const list = document.getElementById('leaderboard');
+      data.leaderboard.forEach((player, index) => {
+        const li = document.createElement('li');
+        li.innerText = `${index + 1}. ${player.username || player.telegramId} — 🏆 ${player.wins} wins`;
+        list.appendChild(li);
+      });
+    } else {
+      document.getElementById('leaderboard').innerText = 'Could not load leaderboard.';
+    }
+  });
