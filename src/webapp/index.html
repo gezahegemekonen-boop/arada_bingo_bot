@@ -16,6 +16,27 @@
   <button id="depositBtn">💳 Deposit</button>
   <button id="inviteBtn">📨 Invite Friends</button>
 
+  <div id="depositForm" style="display:none;">
+    <h3>💳 Manual Deposit</h3>
+    <label>Choose Method:</label><br/>
+    <select id="depositMethod">
+      <option value="CBE">CBE</option>
+      <option value="CBE_BIRR">CBE Birr</option>
+      <option value="TELEBIRR">Telebirr</option>
+    </select><br/><br/>
+
+    <label>Amount (min 30 Br):</label><br/>
+    <input type="number" id="depositAmount" /><br/><br/>
+
+    <label>Phone Number (optional):</label><br/>
+    <input type="text" id="depositPhone" /><br/><br/>
+
+    <label>Transaction Code:</label><br/>
+    <input type="text" id="depositTxId" /><br/><br/>
+
+    <button id="submitDeposit">✅ Verify Deposit</button>
+  </div>
+
   <h3>🏆 Leaderboard</h3>
   <ul id="leaderboard"></ul>
 
