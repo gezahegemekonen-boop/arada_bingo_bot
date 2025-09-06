@@ -1,61 +1,66 @@
 import express from 'express';
-import Payout from '../models/Payout.js';
+import DepositConfirmation from '../models/DepositConfirmation.js';
 import Player from '../models/Player.js';
 
 const router = express.Router();
 
-// ✅ Get all payouts (latest first)
-router.get('/payouts', async (req, res) => {
+// ✅ View all deposit confirmations
+router.get('/deposits', async (req, res) => {
   try {
-    const payouts = await Payout.find().sort({ requestedAt: -1 });
-    res.status(200).json({ success: true, payouts });
+    const deposits = await DepositConfirmation.find().sort({ submittedAt: -1 });
+    res.status(200).json({ success: true, deposits });
   } catch (err) {
-    console.error('Admin payouts error:', err);
-    res.status(500).json({ success: false, message: 'Server error while fetching payouts' });
+    console.error('Admin deposits error:', err);
+    res.status(500).json({ success: false, message: 'Server error while fetching deposits' });
   }
 });
 
-// ✅ Approve payout manually
-router.post('/approve/:id', async (req, res) => {
+// ✅ Approve deposit and credit coins
+router.post('/approve-deposit/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const payout = await Payout.findById(id);
-    if (!payout) return res.status(404).json({ success: false, message: 'Payout not found' });
+    const deposit = await DepositConfirmation.findById(id);
+    if (!deposit || deposit.status !== 'pending') {
+      return res.status(404).json({ success: false, message: 'Deposit not found or already processed' });
+    }
 
-    payout.status = 'approved';
-    payout.processedAt = new Date();
-    await payout.save();
+    const player = await Player.findOne({ telegramId: deposit.telegramId });
+    if (!player) {
+      return res.status(404).json({ success: false, message: 'Player not found' });
+    }
 
-    res.status(200).json({ success: true, message: '✅ Payout approved' });
+    player.coins += deposit.amount;
+    await player.save();
+
+    deposit.status = 'approved';
+    deposit.processedAt = new Date();
+    await deposit.save();
+
+    res.status(200).json({ success: true, message: `✅ Deposit approved and ${deposit.amount} coins credited` });
   } catch (err) {
-    console.error('Approve error:', err);
+    console.error('Approve deposit error:', err);
     res.status(500).json({ success: false, message: 'Server error during approval' });
   }
 });
 
-// ✅ Reject payout manually
-router.post('/reject/:id', async (req, res) => {
+// ✅ Reject deposit
+router.post('/reject-deposit/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const payout = await Payout.findById(id);
-    if (!payout) return res.status(404).json({ success: false, message: 'Payout not found' });
-
-    payout.status = 'rejected';
-    payout.processedAt = new Date();
-    await payout.save();
-
-    // Optionally refund coins to player
-    const player = await Player.findOne({ telegramId: payout.telegramId });
-    if (player) {
-      player.coins += payout.amount;
-      await player.save();
+    const deposit = await DepositConfirmation.findById(id);
+    if (!deposit || deposit.status !== 'pending') {
+      return res.status(404).json({ success: false, message: 'Deposit not found or already processed' });
     }
 
-    res.status(200).json({ success: true, message: '❌ Payout rejected and coins refunded' });
+    deposit.status = 'rejected';
+    deposit.processedAt = new Date();
+    await deposit.save();
+
+    res.status(200).json({ success: true, message: '❌ Deposit rejected' });
   } catch (err) {
-    console.error('Reject error:', err);
+    console.error('Reject deposit error:', err);
     res.status(500).json({ success: false, message: 'Server error during rejection' });
   }
 });
