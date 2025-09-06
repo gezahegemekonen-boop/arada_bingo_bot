@@ -4,20 +4,18 @@ import Payout from '../models/Payout.js';
 
 const router = express.Router();
 
-// ✅ Health check
+// Health check
 router.get('/', (req, res) => {
   res.send('Players route is working ✅');
 });
 
-// ✅ Simulate Bingo play
+// Simulate Bingo play
 router.post('/:telegramId/play', async (req, res) => {
   const { telegramId } = req.params;
 
   try {
     const player = await Player.findOne({ telegramId });
-    if (!player) {
-      return res.status(404).json({ success: false, message: 'Player not found' });
-    }
+    if (!player) return res.status(404).json({ success: false, message: 'Player not found' });
 
     player.coins += 5;
     player.wins += 1;
@@ -35,7 +33,7 @@ router.post('/:telegramId/play', async (req, res) => {
   }
 });
 
-// ✅ Leaderboard route
+// Leaderboard
 router.get('/leaderboard', async (req, res) => {
   try {
     const topPlayers = await Player.find({})
@@ -43,17 +41,14 @@ router.get('/leaderboard', async (req, res) => {
       .limit(10)
       .select('telegramId username wins referralCoins');
 
-    res.status(200).json({
-      success: true,
-      leaderboard: topPlayers
-    });
+    res.status(200).json({ success: true, leaderboard: topPlayers });
   } catch (err) {
     console.error('Leaderboard error:', err);
     res.status(500).json({ success: false, message: 'Server error while fetching leaderboard' });
   }
 });
 
-// ✅ Claim reward / request payout
+// Auto-approved payout
 router.post('/:telegramId/payout', async (req, res) => {
   const { telegramId } = req.params;
 
@@ -66,14 +61,20 @@ router.post('/:telegramId/payout', async (req, res) => {
     const payout = new Payout({
       telegramId,
       username: player.username,
-      amount: player.coins
+      amount: player.coins,
+      status: 'approved',
+      processedAt: new Date()
     });
 
     player.coins = 0;
     await player.save();
     await payout.save();
 
-    res.status(200).json({ success: true, message: 'Payout request submitted', payoutId: payout._id });
+    res.status(200).json({
+      success: true,
+      message: '✅ Payout approved automatically',
+      payoutId: payout._id
+    });
   } catch (err) {
     console.error('Payout error:', err);
     res.status(500).json({ success: false, message: 'Server error during payout request' });
