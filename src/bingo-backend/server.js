@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import playersRoute from './routes/players.js';
 import healthRoute from './routes/health.js';
 import referralRoute from './routes/referral.js';
+import depositRoute from './routes/deposit.js'; // ✅ NEW
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use('/players', playersRoute);
 app.use('/health', healthRoute);
 app.use('/referral', referralRoute);
+app.use('/deposit', depositRoute); // ✅ NEW
 
 // ✅ Root endpoint
 app.get('/', (req, res) => {
