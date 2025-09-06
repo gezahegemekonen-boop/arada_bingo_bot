@@ -6,7 +6,7 @@ const username = tg.initDataUnsafe?.user?.username;
 
 document.getElementById('welcome').innerText = `👋 Welcome, ${username || 'Player'}!`;
 
-// ✅ Fetch referral stats
+// ✅ Referral stats
 fetch(`https://bingo-backend-vdeo.onrender.com/referral/${userId}`)
   .then(res => res.json())
   .then(data => {
@@ -35,12 +35,28 @@ document.getElementById('playBtn').onclick = () => {
   });
 };
 
+// ✅ Claim Reward
+document.getElementById('claimBtn').onclick = () => {
+  fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/payout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert(`✅ Payout requested!\nYour coins will be reviewed by admin.`);
+    } else {
+      alert(`❌ ${data.message}`);
+    }
+  });
+};
+
 // ✅ Invite Friends
 document.getElementById('inviteBtn').onclick = () => {
   tg.openTelegramLink(`https://t.me/your_bot_username?start=${userId}`);
 };
 
-// ✅ Fetch leaderboard
+// ✅ Leaderboard
 fetch('https://bingo-backend-vdeo.onrender.com/players/leaderboard')
   .then(res => res.json())
   .then(data => {
