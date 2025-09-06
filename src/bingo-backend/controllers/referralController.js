@@ -40,8 +40,10 @@ export const updateReferralStats = async (req, res) => {
     }
 
     inviter.referrals.push(newUserId);
-    inviter.referralCoins += 2; // reward amount
+    inviter.referralCoins += 2;
     await inviter.save();
+
+    console.log(`✅ Referral recorded: ${referralCode} → ${newUserId}`);
 
     res.status(200).json({ success: true, message: 'Referral recorded and coins rewarded' });
   } catch (err) {
@@ -49,4 +51,3 @@ export const updateReferralStats = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error while updating referral stats' });
   }
 };
-
