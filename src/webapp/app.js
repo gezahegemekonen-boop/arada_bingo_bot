@@ -6,7 +6,7 @@ const username = tg.initDataUnsafe?.user?.username;
 
 document.getElementById('welcome').innerText = `👋 Welcome, ${username || 'Player'}!`;
 
-// ✅ Referral stats
+// Referral stats
 fetch(`https://bingo-backend-vdeo.onrender.com/referral/${userId}`)
   .then(res => res.json())
   .then(data => {
@@ -18,7 +18,7 @@ fetch(`https://bingo-backend-vdeo.onrender.com/referral/${userId}`)
     }
   });
 
-// ✅ Play Bingo
+// Play Bingo
 document.getElementById('playBtn').onclick = () => {
   fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/play`, {
     method: 'POST',
@@ -35,7 +35,7 @@ document.getElementById('playBtn').onclick = () => {
   });
 };
 
-// ✅ Claim Reward
+// Claim Reward
 document.getElementById('claimBtn').onclick = () => {
   fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/payout`, {
     method: 'POST',
@@ -44,19 +44,19 @@ document.getElementById('claimBtn').onclick = () => {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      alert(`✅ Payout requested!\nYour coins will be reviewed by admin.`);
+      alert(`✅ Payout approved!\nYour coins have been claimed.`);
     } else {
       alert(`❌ ${data.message}`);
     }
   });
 };
 
-// ✅ Invite Friends
+// Invite Friends
 document.getElementById('inviteBtn').onclick = () => {
   tg.openTelegramLink(`https://t.me/your_bot_username?start=${userId}`);
 };
 
-// ✅ Leaderboard
+// Leaderboard
 fetch('https://bingo-backend-vdeo.onrender.com/players/leaderboard')
   .then(res => res.json())
   .then(data => {
