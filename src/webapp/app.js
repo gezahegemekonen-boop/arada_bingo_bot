@@ -66,7 +66,7 @@ document.getElementById('depositBtn').onclick = () => {
   const txId = prompt('Enter transaction ID or reference number:');
   if (!txId) return alert('Transaction ID required');
 
-  fetch('https://bingo-backend-vdeo.onrender.com/deposit', {
+  fetch('https://bingo-backend-vdeo.onrender.com/deposit/confirm', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ telegramId: userId, amount, method, txId })
@@ -74,7 +74,7 @@ document.getElementById('depositBtn').onclick = () => {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      alert(`✅ Deposit successful!\nNew coin balance: ${data.coins}`);
+      alert(`✅ Deposit submitted for review`);
     } else {
       alert(`❌ ${data.message}`);
     }
@@ -123,7 +123,7 @@ fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/payouts`)
     }
   });
 
-// ✅ Admin Panel — View and manage payouts
+// ✅ Admin Panel — Payouts
 fetch('https://bingo-backend-vdeo.onrender.com/admin/payouts')
   .then(res => res.json())
   .then(data => {
@@ -151,7 +151,6 @@ fetch('https://bingo-backend-vdeo.onrender.com/admin/payouts')
     }
   });
 
-// ✅ Approve payout
 window.approvePayout = (id) => {
   fetch(`https://bingo-backend-vdeo.onrender.com/admin/approve/${id}`, {
     method: 'POST'
@@ -163,7 +162,6 @@ window.approvePayout = (id) => {
   });
 };
 
-// ✅ Reject payout
 window.rejectPayout = (id) => {
   fetch(`https://bingo-backend-vdeo.onrender.com/admin/reject/${id}`, {
     method: 'POST'
@@ -174,3 +172,14 @@ window.rejectPayout = (id) => {
     location.reload();
   });
 };
+
+// ✅ Admin Panel — Deposits
+fetch('https://bingo-backend-vdeo.onrender.com/admin/deposits')
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      const list = document.getElementById('adminDeposits');
+      if (data.deposits.length === 0) {
+        list.innerHTML = '<li>No deposit confirmations found.</li>';
+      } else {
+        data.deposits.forEach((deposit, index)
