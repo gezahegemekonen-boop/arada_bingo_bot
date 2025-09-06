@@ -1,10 +1,11 @@
 import express from 'express';
 import Player from '../models/Player.js';
+import DepositConfirmation from '../models/DepositConfirmation.js';
 
 const router = express.Router();
 
-// POST /deposit — user submits deposit request
-router.post('/', async (req, res) => {
+// ✅ Submit deposit confirmation
+router.post('/confirm', async (req, res) => {
   const { telegramId, amount, method, txId } = req.body;
 
   if (!telegramId || !amount || !method || !txId) {
@@ -25,13 +26,24 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Player not found' });
     }
 
-    player.coins += amount;
-    await player.save();
+    const confirmation = new DepositConfirmation({
+      telegramId,
+      username: player.username,
+      amount,
+      method,
+      txId
+    });
 
-    res.status(200).json({ success: true, message: `✅ Deposit of ${amount} Br via ${method} received`, coins: player.coins });
+    await confirmation.save();
+
+    res.status(200).json({
+      success: true,
+      message: '✅ Deposit submitted for review',
+      confirmationId: confirmation._id
+    });
   } catch (err) {
-    console.error('Deposit error:', err);
-    res.status(500).json({ success: false, message: 'Server error during deposit' });
+    console.error('Deposit confirm error:', err);
+    res.status(500).json({ success: false, message: 'Server error during deposit confirmation' });
   }
 });
 
