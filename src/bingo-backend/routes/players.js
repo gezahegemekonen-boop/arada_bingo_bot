@@ -3,12 +3,12 @@ import Player from '../models/Player.js';
 
 const router = express.Router();
 
-// ✅ GET /players — simple health check
+// ✅ Health check
 router.get('/', (req, res) => {
   res.send('Players route is working ✅');
 });
 
-// ✅ POST /players/:telegramId/play — simulate Bingo play
+// ✅ Simulate Bingo play
 router.post('/:telegramId/play', async (req, res) => {
   const { telegramId } = req.params;
 
@@ -18,7 +18,6 @@ router.post('/:telegramId/play', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Player not found' });
     }
 
-    // Simulate a Bingo win
     player.coins += 5;
     player.wins += 1;
     await player.save();
@@ -32,6 +31,24 @@ router.post('/:telegramId/play', async (req, res) => {
   } catch (err) {
     console.error('Play error:', err);
     res.status(500).json({ success: false, message: 'Server error during play' });
+  }
+});
+
+// ✅ Leaderboard route
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const topPlayers = await Player.find({})
+      .sort({ wins: -1 })
+      .limit(10)
+      .select('telegramId username wins referralCoins');
+
+    res.status(200).json({
+      success: true,
+      leaderboard: topPlayers
+    });
+  } catch (err) {
+    console.error('Leaderboard error:', err);
+    res.status(500).json({ success: false, message: 'Server error while fetching leaderboard' });
   }
 });
 
