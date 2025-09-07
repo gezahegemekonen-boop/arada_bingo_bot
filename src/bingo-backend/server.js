@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
+import morgan from 'morgan';
 import { fileURLToPath } from 'url';
 
 import playersRoute from './routes/players.js';
@@ -27,6 +28,7 @@ app.use('/uploads', express.static('uploads'));
 
 // ✅ Middleware
 app.use(express.json());
+app.use(morgan('dev')); // Optional: logs requests for debugging
 
 // ✅ API Routes
 app.use('/players', playersRoute);
