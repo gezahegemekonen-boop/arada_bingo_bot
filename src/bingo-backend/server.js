@@ -7,8 +7,8 @@ import { fileURLToPath } from 'url';
 import playersRoute from './routes/players.js';
 import healthRoute from './routes/health.js';
 import referralRoute from './routes/referral.js';
-import depositRoute from './routes/deposit.js';   // ✅ Deposit + Confirmation
-import adminRoute from './routes/admin.js';       // ✅ Admin dashboard
+import depositRoute from './routes/deposit.js';
+import adminRoute from './routes/admin.js';
 
 dotenv.config();
 
@@ -19,8 +19,11 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Serve Telegram Web App frontend from src/webapp
+// ✅ Serve Telegram Web App frontend
 app.use(express.static(path.join(__dirname, '../webapp')));
+
+// ✅ Serve uploaded screenshots
+app.use('/uploads', express.static('uploads'));
 
 // ✅ Middleware
 app.use(express.json());
@@ -29,8 +32,8 @@ app.use(express.json());
 app.use('/players', playersRoute);
 app.use('/health', healthRoute);
 app.use('/referral', referralRoute);
-app.use('/deposit', depositRoute);   // includes /deposit and /deposit/confirm
-app.use('/admin', adminRoute);       // includes /admin/payouts and approvals
+app.use('/deposit', depositRoute);
+app.use('/admin', adminRoute);
 
 // ✅ Root endpoint
 app.get('/', (req, res) => {
