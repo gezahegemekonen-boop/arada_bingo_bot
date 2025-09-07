@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import morgan from 'morgan';
+import cors from 'cors'; // ✅ ADD THIS
 import { fileURLToPath } from 'url';
 
 import playersRoute from './routes/players.js';
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, '../webapp')));
 app.use('/uploads', express.static('uploads'));
 
 // ✅ Middleware
+app.use(cors()); // ✅ ENABLE CORS FOR NETLIFY FRONTEND
 app.use(express.json());
 app.use(morgan('dev')); // Optional: logs requests for debugging
 
