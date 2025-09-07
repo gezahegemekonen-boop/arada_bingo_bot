@@ -7,7 +7,7 @@ const username = tg.initDataUnsafe?.user?.username;
 document.getElementById('welcome').innerText = `👋 Welcome, ${username || 'Player'}!`;
 
 // Referral stats
-fetch(`https://bingo-backend-vdeo.onrender.com/referral/${userId}`)
+fetch(`https://arada-bingo-legacy.onrender.com/referral/${userId}`)
   .then(res => res.json())
   .then(data => {
     if (data.success) {
@@ -18,7 +18,7 @@ fetch(`https://bingo-backend-vdeo.onrender.com/referral/${userId}`)
 
 // Play Bingo
 document.getElementById('playBtn').onclick = () => {
-  fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/play`, {
+  fetch(`https://arada-bingo-legacy.onrender.com/players/${userId}/play`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ telegramId: userId })
@@ -34,7 +34,7 @@ document.getElementById('claimBtn').onclick = () => {
   const amount = parseInt(prompt('💰 Enter amount to withdraw (50–500 Br):'));
   if (isNaN(amount)) return alert('Invalid amount');
 
-  fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/payout`, {
+  fetch(`https://arada-bingo-legacy.onrender.com/players/${userId}/payout`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ amount })
@@ -46,7 +46,6 @@ document.getElementById('claimBtn').onclick = () => {
 };
 
 // Deposit Form
-
 document.getElementById('depositBtn').onclick = () => {
   document.getElementById('depositForm').style.display = 'block';
 };
@@ -71,7 +70,7 @@ document.getElementById('submitDeposit').onclick = () => {
   if (phone) formData.append('phone', phone);
   if (file) formData.append('screenshot', file);
 
-  fetch('https://bingo-backend-vdeo.onrender.com/deposit/confirm', {
+  fetch('https://arada-bingo-legacy.onrender.com/deposit/confirm', {
     method: 'POST',
     body: formData
   })
@@ -82,14 +81,13 @@ document.getElementById('submitDeposit').onclick = () => {
   });
 };
 
-
 // Invite Friends
 document.getElementById('inviteBtn').onclick = () => {
   tg.openTelegramLink(`https://t.me/your_bot_username?start=${userId}`);
 };
 
 // Leaderboard
-fetch('https://bingo-backend-vdeo.onrender.com/players/leaderboard')
+fetch('https://arada-bingo-legacy.onrender.com/players/leaderboard')
   .then(res => res.json())
   .then(data => {
     const list = document.getElementById('leaderboard');
@@ -101,7 +99,7 @@ fetch('https://bingo-backend-vdeo.onrender.com/players/leaderboard')
   });
 
 // Payout History
-fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/payouts`)
+fetch(`https://arada-bingo-legacy.onrender.com/players/${userId}/payouts`)
   .then(res => res.json())
   .then(data => {
     const list = document.getElementById('payoutHistory');
@@ -118,7 +116,7 @@ fetch(`https://bingo-backend-vdeo.onrender.com/players/${userId}/payouts`)
   });
 
 // Admin Panel — Payouts
-fetch('https://bingo-backend-vdeo.onrender.com/admin/payouts')
+fetch('https://arada-bingo-legacy.onrender.com/admin/payouts')
   .then(res => res.json())
   .then(data => {
     const list = document.getElementById('adminPayouts');
@@ -138,7 +136,7 @@ fetch('https://bingo-backend-vdeo.onrender.com/admin/payouts')
   });
 
 window.approvePayout = (id) => {
-  fetch(`https://bingo-backend-vdeo.onrender.com/admin/approve/${id}`, { method: 'POST' })
+  fetch(`https://arada-bingo-legacy.onrender.com/admin/approve/${id}`, { method: 'POST' })
     .then(res => res.json())
     .then(data => {
       alert(data.message);
@@ -147,7 +145,7 @@ window.approvePayout = (id) => {
 };
 
 window.rejectPayout = (id) => {
-  fetch(`https://bingo-backend-vdeo.onrender.com/admin/reject/${id}`, {
+  fetch(`https://arada-bingo-legacy.onrender.com/admin/reject/${id}`, {
     method: 'POST'
   })
   .then(res => res.json())
@@ -157,8 +155,8 @@ window.rejectPayout = (id) => {
   });
 };
 
-// ✅ Admin Panel — Deposits
-fetch('https://bingo-backend-vdeo.onrender.com/admin/deposits')
+// Admin Panel — Deposits
+fetch('https://arada-bingo-legacy.onrender.com/admin/deposits')
   .then(res => res.json())
   .then(data => {
     if (data.success) {
@@ -186,9 +184,8 @@ fetch('https://bingo-backend-vdeo.onrender.com/admin/deposits')
     }
   });
 
-// ✅ Approve deposit
 window.approveDeposit = (id) => {
-  fetch(`https://bingo-backend-vdeo.onrender.com/admin/approve-deposit/${id}`, {
+  fetch(`https://arada-bingo-legacy.onrender.com/admin/approve-deposit/${id}`, {
     method: 'POST'
   })
   .then(res => res.json())
@@ -198,9 +195,8 @@ window.approveDeposit = (id) => {
   });
 };
 
-// ✅ Reject deposit
 window.rejectDeposit = (id) => {
-  fetch(`https://bingo-backend-vdeo.onrender.com/admin/reject-deposit/${id}`, {
+  fetch(`https://arada-bingo-legacy.onrender.com/admin/reject-deposit/${id}`, {
     method: 'POST'
   })
   .then(res => res.json())
