@@ -50,6 +50,7 @@ document.getElementById('depositBtn').onclick = () => {
   document.getElementById('depositForm').style.display = 'block';
 };
 
+
 document.getElementById('submitDeposit').onclick = () => {
   const amount = parseInt(document.getElementById('depositAmount').value);
   const method = document.getElementById('depositMethod').value;
