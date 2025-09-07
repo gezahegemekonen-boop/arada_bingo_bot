@@ -1,12 +1,9 @@
-import express from 'express';
-import Player from '../models/Player.js';
-import DepositConfirmation from '../models/DepositConfirmation.js';
+import multer from 'multer';
+const upload = multer({ dest: 'uploads/' });
 
-const router = express.Router();
-
-// ✅ Submit deposit confirmation
-router.post('/confirm', async (req, res) => {
-  const { telegramId, amount, method, txId } = req.body;
+router.post('/confirm', upload.single('screenshot'), async (req, res) => {
+  const { telegramId, amount, method, txId, phone } = req.body;
+  const screenshotPath = req.file?.path;
 
   if (!telegramId || !amount || !method || !txId) {
     return res.status(400).json({ success: false, message: 'Missing required fields' });
@@ -31,20 +28,16 @@ router.post('/confirm', async (req, res) => {
       username: player.username,
       amount,
       method,
-      txId
+      txId,
+      phone,
+      screenshot: screenshotPath,
+      status: 'pending'
     });
 
     await confirmation.save();
-
-    res.status(200).json({
-      success: true,
-      message: '✅ Deposit submitted for review',
-      confirmationId: confirmation._id
-    });
+    res.status(200).json({ success: true, message: 'Deposit submitted with screenshot' });
   } catch (err) {
     console.error('Deposit confirm error:', err);
     res.status(500).json({ success: false, message: 'Server error during deposit confirmation' });
   }
 });
-
-export default router;
