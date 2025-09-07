@@ -46,32 +46,42 @@ document.getElementById('claimBtn').onclick = () => {
 };
 
 // Deposit Form
+
 document.getElementById('depositBtn').onclick = () => {
   document.getElementById('depositForm').style.display = 'block';
 };
-
 
 document.getElementById('submitDeposit').onclick = () => {
   const amount = parseInt(document.getElementById('depositAmount').value);
   const method = document.getElementById('depositMethod').value;
   const txId = document.getElementById('depositTxId').value;
   const phone = document.getElementById('depositPhone').value;
+  const fileInput = document.getElementById('depositScreenshot');
+  const file = fileInput.files[0];
 
   if (!amount || amount < 30) return alert('Minimum deposit is 30 Br');
   if (!['CBE', 'CBE_BIRR', 'TELEBIRR'].includes(method)) return alert('Invalid method');
   if (!txId) return alert('Transaction code required');
 
+  const formData = new FormData();
+  formData.append('telegramId', userId);
+  formData.append('amount', amount);
+  formData.append('method', method);
+  formData.append('txId', txId);
+  if (phone) formData.append('phone', phone);
+  if (file) formData.append('screenshot', file);
+
   fetch('https://bingo-backend-vdeo.onrender.com/deposit/confirm', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ telegramId: userId, amount, method, txId, phone })
+    body: formData
   })
   .then(res => res.json())
   .then(data => {
-    alert(data.success ? '✅ Deposit submitted for review' : `❌ ${data.message}`);
+    alert(data.success ? '✅ Deposit submitted with screenshot' : `❌ ${data.message}`);
     if (data.success) document.getElementById('depositForm').style.display = 'none';
   });
 };
+
 
 // Invite Friends
 document.getElementById('inviteBtn').onclick = () => {
