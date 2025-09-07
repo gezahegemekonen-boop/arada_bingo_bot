@@ -1,24 +1,26 @@
-<div id="depositForm" style="display:none;">
+<div id="depositForm" style="display:none; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
   <h3>💳 Manual Deposit</h3>
 
-  <label>Choose Method:</label><br/>
+  <label for="depositMethod">Choose Method:</label><br/>
   <select id="depositMethod">
     <option value="CBE">CBE</option>
     <option value="CBE_BIRR">CBE Birr</option>
     <option value="TELEBIRR">Telebirr</option>
   </select><br/><br/>
 
-  <label>Amount (min 30 Br):</label><br/>
-  <input type="number" id="depositAmount" /><br/><br/>
+  <label for="depositAmount">Amount (min 30 Br):</label><br/>
+  <input type="number" id="depositAmount" placeholder="Enter amount" /><br/><br/>
 
-  <label>Phone Number (optional):</label><br/>
-  <input type="text" id="depositPhone" /><br/><br/>
+  <label for="depositPhone">Phone Number (optional):</label><br/>
+  <input type="text" id="depositPhone" placeholder="09..." /><br/><br/>
 
-  <label>Transaction Code:</label><br/>
-  <input type="text" id="depositTxId" /><br/><br/>
+  <label for="depositTxId">Transaction Code:</label><br/>
+  <input type="text" id="depositTxId" placeholder="e.g. TX123456" /><br/><br/>
 
-  <label>Upload Screenshot (optional):</label><br/>
+  <label for="depositScreenshot">Upload Screenshot (optional):</label><br/>
   <input type="file" id="depositScreenshot" accept="image/*" /><br/><br/>
 
-  <button id="submitDeposit">✅ Verify Deposit</button>
+  <button id="submitDeposit" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px;">
+    ✅ Verify Deposit
+  </button>
 </div>
