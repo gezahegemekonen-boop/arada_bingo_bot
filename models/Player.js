@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// models/Player.js
+import mongoose from 'mongoose';
 
 const playerSchema = new mongoose.Schema({
   telegramId: {
@@ -8,7 +9,7 @@ const playerSchema = new mongoose.Schema({
   },
   balance: {
     type: Number,
-    default: 10, // First-time bonus
+    default: 10, // 🎁 First-time bonus
   },
   coins: {
     type: Number,
@@ -52,7 +53,7 @@ const playerSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   }
-
 }, { timestamps: true });
 
-module.exports = mongoose.model('Player', playerSchema);
+const Player = mongoose.model('Player', playerSchema);
+export default Player;
