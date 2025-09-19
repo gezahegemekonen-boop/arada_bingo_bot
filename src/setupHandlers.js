@@ -9,7 +9,7 @@ export function setupHandlers({ bot, gm, adminId }) {
   // --- /start command ---
   bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
-    await bot.sendMessage(chatId, '👋 Welcome to Bingo Bot! Type /play to begin or /help to see all commands.');
+    await bot.sendMessage(chatId, '👋 Welcome to Arada Bingo Ethiopia! Type /play to begin or /help to see all commands.');
   });
 
   // --- /help command ---
@@ -17,7 +17,7 @@ export function setupHandlers({ bot, gm, adminId }) {
     const helpText = `
 📜 Available Commands:
 /start – Welcome message
-/play – Generate your Bingo cartela
+/play – Join a Bingo game
 /deposit <amount> – Send deposit request
 /status – Check your deposit/game status
 /language – Switch language (Amharic/English)
@@ -34,21 +34,11 @@ export function setupHandlers({ bot, gm, adminId }) {
 
   // --- /play command ---
   bot.onText(/\/play/, async (msg) => {
-    const chatId = msg.chat.id;
-
     try {
-      await bot.sendMessage(chatId, '🎲 Generating your cartela...');
-      const cartela = await gm.generateCartela(chatId);
-
-      if (!cartela) {
-        await bot.sendMessage(chatId, '⚠️ Failed to generate cartela. Please try again.');
-        return;
-      }
-
-      await bot.sendMessage(chatId, `🧩 Your cartela:\n${cartela}`);
+      await gm.handlePlayCommand(msg);
     } catch (error) {
       console.error('Error in /play handler:', error);
-      await bot.sendMessage(chatId, '🚫 An error occurred while starting the game. Please contact support or try again later.');
+      await bot.sendMessage(msg.chat.id, '🚫 An error occurred while starting the game. Please contact support or try again later.');
     }
   });
 
